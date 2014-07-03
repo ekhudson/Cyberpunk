@@ -18,7 +18,8 @@ public class GrendelKeyBinding
 
 	public List<GrendelKeyBinding> Conflicts = new List<GrendelKeyBinding>(); //TODO: Figure out the most efficient way to update keybind conflicts
 
-    private bool mIsDown = false;
+	[System.NonSerialized]
+	private bool mIsDown = false;
 
 	public GrendelKeyBinding(string bindingName, KeyCode key, KeyCode altKey, MouseButtons mouseButton, MouseButtons altMouseButton, GamePadButtonValues controllerButtons, GamePadJoystickValues joysticks)
 	{
