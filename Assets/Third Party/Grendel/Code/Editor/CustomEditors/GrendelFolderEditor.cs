@@ -95,6 +95,7 @@ public class GrendelFolderEditor : GrendelEditor<GrendelFolder>
                 GUI.DrawTexture(new Rect(selectionRect.x + kToggleWidth, selectionRect.y, kIconWidth, selectionRect.height), folder.DefaultTexture);
             }
 
+			GUI.color = mFolderTextStyle.normal.textColor;
 			GUI.Label(new Rect(selectionRect.x + kIconWidth + kToggleWidth, selectionRect.y, selectionRect.width, selectionRect.height), folder.name, mFolderTextStyle);
 
             if (!folder.IsVisible)
