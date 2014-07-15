@@ -22,16 +22,25 @@ public class UserInput<T> : Singleton<T> where T  : MonoBehaviour
 
     [HideInInspector]public List<GrendelKeyBinding> KeyBindings = new List<GrendelKeyBinding>();
 
+	[System.NonSerialized]
     private Dictionary<KeyCode, List<GrendelKeyBinding>> mGrendelKeyBindingsDictionary = new Dictionary<KeyCode, List<GrendelKeyBinding>>();
-    private Dictionary<GrendelKeyBinding.MouseButtons, List<GrendelKeyBinding>> mMouseBindingsDictionary = new Dictionary<GrendelKeyBinding.MouseButtons, List<GrendelKeyBinding>>();
+    
+	[System.NonSerialized]
+	private Dictionary<GrendelKeyBinding.MouseButtons, List<GrendelKeyBinding>> mMouseBindingsDictionary = new Dictionary<GrendelKeyBinding.MouseButtons, List<GrendelKeyBinding>>();
+
+	[System.NonSerialized]
 	private Dictionary<GrendelKeyBinding.GamePadButtonValues, List<GrendelKeyBinding>> mGamepPadButtonBindings = new Dictionary<GrendelKeyBinding.GamePadButtonValues, List<GrendelKeyBinding>>();
+
+	[System.NonSerialized]
 	private Dictionary<GrendelKeyBinding.GamePadJoystickValues, List<GrendelKeyBinding>> mGamepadJoystickBindings = new Dictionary<GrendelKeyBinding.GamePadJoystickValues, List<GrendelKeyBinding>>();
 
+	[System.NonSerialized]
     private List<GrendelKeyBinding> mKeysDown = new List<GrendelKeyBinding>();
 
+	[System.NonSerialized]
 	private Dictionary<int, List<GrendelKeyBinding>> mKeyDownDict = new Dictionary<int, List<GrendelKeyBinding>>();
 	
-
+	[System.NonSerialized]
 	private List<int> mConnectControllerIndexes = new List<int>();
     
     // Use this for initialization

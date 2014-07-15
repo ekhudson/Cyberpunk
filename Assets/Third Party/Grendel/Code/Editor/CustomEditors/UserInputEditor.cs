@@ -11,8 +11,11 @@ using XInputDotNetPure;
 [CustomEditor(typeof(BrawlerUserInput), true)]
 public class UserInputEditor : GrendelEditor<BrawlerUserInput>
 {
+	[System.NonSerialized]
     private const float kLabelWidth = 64f;
+	[System.NonSerialized]
     private const float kButtonWidth = 128f;
+	[System.NonSerialized]
     private const float kButtonHeight = 32f;
 
     private void OnEnable()
