@@ -27,7 +27,7 @@ public class UserInputEditor : GrendelEditor<BrawlerUserInput>
 	{
 		base.OnInspectorGUI();
 
-		Undo.SetSnapshotTarget(Target, "User Input Change");
+		Undo.RecordObject(Target, "User Input Change");
 
         DrawDefaultInspector();
 
@@ -35,7 +35,7 @@ public class UserInputEditor : GrendelEditor<BrawlerUserInput>
 
         foreach(GrendelKeyBinding binding in Target.KeyBindings)
         {
-            Undo.CreateSnapshot();
+			Undo.RecordObject(Target, "User Input Change");
             changed = false;
 
             GUILayout.BeginVertical(GUI.skin.box);
@@ -112,7 +112,7 @@ public class UserInputEditor : GrendelEditor<BrawlerUserInput>
 
             if (changed)
             {
-                Undo.RegisterSnapshot();
+				Undo.RecordObject(Target, "User Input Change");
                 EditorUtility.SetDirty(Target);
             }
 

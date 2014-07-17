@@ -85,6 +85,7 @@ public class GrendelKeyBinding
 
 	public enum GamePadButtonValues
 	{
+		None = 0,
 		DPadUp = 1,
 		DPadDown = 2,
 		DPadLeft = 4,
@@ -98,11 +99,12 @@ public class GrendelKeyBinding
 		A = 4096,
 		B = 8192,
 		X = 16384,
-		Y = 32768
+		Y = 32768,
 	}
 
 	public enum GamePadJoystickValues
 	{
+		None = 0, 
 		LeftTrigger = 1,
 		RightTrigger = 2,
 		LeftStick = 4,

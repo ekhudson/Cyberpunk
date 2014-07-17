@@ -42,7 +42,7 @@ public class BaseObject : MonoBehaviour
     protected Collider mLastCollider = null;
     
     //PRIVATE VARIABLES
-    private float mUpdateInterval;
+	private float mUpdateInterval = 0f;
         
     //ACCESSORS
     public Transform BaseTransform

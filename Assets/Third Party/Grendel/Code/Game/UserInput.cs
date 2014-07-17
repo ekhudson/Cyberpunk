@@ -146,7 +146,7 @@ public class UserInput<T> : Singleton<T> where T  : MonoBehaviour
                 }
             }
 
-			if (binding.ControllerButtons != null)
+			if (binding.ControllerButtons != GrendelKeyBinding.GamePadButtonValues.None)
 			{
 				if (!mGamepPadButtonBindings.ContainsKey(binding.ControllerButtons))
 				{
@@ -158,7 +158,7 @@ public class UserInput<T> : Singleton<T> where T  : MonoBehaviour
 				}
 			}
 
-			if (binding.ControllerJoysticks != null)
+			if (binding.ControllerJoysticks != GrendelKeyBinding.GamePadJoystickValues.None)
 			{
 				if (!mGamepadJoystickBindings.ContainsKey(binding.ControllerJoysticks))
 				{

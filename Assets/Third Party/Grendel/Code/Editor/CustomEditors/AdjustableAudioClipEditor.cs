@@ -30,7 +30,7 @@ public class AdjustableAudioClipEditor : GrendelEditor<AdjustableAudioClip>
 				GrendelAudioData.PlayAudioClipPreview(target);
             }
 
-            Rect buttonRect = GUILayoutUtility.GetLastRect();
+            //Rect buttonRect = GUILayoutUtility.GetLastRect();
 
             GUI.color = Color.white;
 

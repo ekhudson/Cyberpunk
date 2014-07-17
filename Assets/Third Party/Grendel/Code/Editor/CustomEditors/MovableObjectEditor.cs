@@ -80,8 +80,8 @@ public class MovableObjectEditor : GrendelEditor<MovableObjectController>
 	}
 
     private void OnSceneGUI()
-    {
-        Undo.SetSnapshotTarget(Target, "Moveable Object Change");
+    {        
+		Undo.RecordObject(Target, "Moveable Object Change");
 
         int positionCount = 1;
         Vector3 originalPosition;
@@ -95,7 +95,7 @@ public class MovableObjectEditor : GrendelEditor<MovableObjectController>
             originalPosition = Target.TargetObject.OriginalPosition;
         }
 
-        Undo.CreateSnapshot();
+		Undo.RecordObject(Target, "Moveable Object Change");
 
         EditorGUI.BeginChangeCheck();
 
@@ -109,8 +109,7 @@ public class MovableObjectEditor : GrendelEditor<MovableObjectController>
 
         if (EditorGUI.EndChangeCheck())
         {
-
-            Undo.RegisterSnapshot();
+			Undo.RecordObject(Target, "Moveable Object Change");
         }
     }
 

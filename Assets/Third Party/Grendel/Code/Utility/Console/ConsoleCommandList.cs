@@ -92,7 +92,7 @@ public class ConsoleCommandList : Singleton<ConsoleCommandList>
 		}
 		else
 		{
-			int index = (int)parameters.Params[0];
+			//int index = (int)parameters.Params[0];
 			//Console.Instance.OutputToConsole(string.Format("Requesting music track {0} : {1}", index.ToString(), AudioList.Instance.MusicTracks[index].ToString()), Console.Instance.Style_Admin);
 		}
 	}

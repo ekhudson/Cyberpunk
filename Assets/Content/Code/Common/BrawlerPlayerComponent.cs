@@ -57,7 +57,7 @@ public class BrawlerPlayerComponent : BrawlerHittable
 	private float mLastAttackEndTime;
 	private Vector3 mLastMovingDirection;
 
-	private Vector3 mCurrentAttackDirection;
+	private Vector3 mCurrentAttackDirection = Vector3.right;
 	
 	public enum PlayerStates
 	{
@@ -1149,8 +1149,8 @@ public class BrawlerPlayerComponent : BrawlerHittable
 
 	private void Attack(float attackForce, float attackMultiplier, Vector3 attackDirection)
 	{
-		float attackDamage = attackForce * attackMultiplier;
-		Vector3 attackVector = (attackDirection == Vector3.zero ? mSpriteRenderer.transform.right : attackDirection) * attackDamage;
+		//float attackDamage = attackForce * attackMultiplier;
+		//Vector3 attackVector = (attackDirection == Vector3.zero ? mSpriteRenderer.transform.right : attackDirection) * attackDamage;
 
 		//EventManager.Instance.Post(new HitEvent(this, PunchBox.collider.bounds, PunchBox.collider.bounds.center, attackDamage, attackVector));
 	}

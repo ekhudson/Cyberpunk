@@ -15,7 +15,7 @@ public class BrawlerAnimationClip : MonoBehaviour
 	private float mCurrentFrameTime = 0f;
 	private float mFrameStartTime = 0f;
 	private float mFrameTime = -1f;
-	private float mLastTimeCheck = 0f;
+	//private float mLastTimeCheck = 0f;
 	private int mCurrentFrame = 0;
 	private int mCurrentPlayDirection = 1; //1 == forward, -1 == backward;
 
@@ -79,7 +79,7 @@ public class BrawlerAnimationClip : MonoBehaviour
 		}
 
 		mIsPlaying = true;
-		mLastTimeCheck = Time.realtimeSinceStartup;
+		//mLastTimeCheck = Time.realtimeSinceStartup;
 
 		if (Application.isPlaying)
 		{

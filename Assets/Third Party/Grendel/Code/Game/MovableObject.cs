@@ -10,8 +10,8 @@ public class MovableObject : MonoBehaviour
     private bool mInterruptable = true;
 
     private int mTargetPosition = -1;
-    private int mPreviousPosition = -1;
-    private int mCurrentPosition;
+    //private int mPreviousPosition = -1;
+    //private int mCurrentPosition;
 
     private Vector3 mMoveDirection = Vector3.zero;
     private float mMoveSpeed = 1f;
@@ -137,7 +137,7 @@ public class MovableObject : MonoBehaviour
                     if (mTargetPosition >= mPositionQueue.Count || mTargetPosition < 0)
                     {
                         mCurrentMoveTime = 0;
-                        mCurrentPosition = mTargetPosition;
+                        //mCurrentPosition = mTargetPosition;
 
                         if (mLoopMode == LoopModes.NONE)
                         {
@@ -186,8 +186,8 @@ public class MovableObject : MonoBehaviour
 
         mCurrentMoveTime = 0f;
         mInterruptable = interruptable;
-        mPreviousPosition = mCurrentPosition;
-        mCurrentPosition = -1;
+        //mPreviousPosition = mCurrentPosition;
+        //mCurrentPosition = -1;
         mTargetPosition = 0;
         State = MoveableObjectStates.MOVING;
     }
@@ -224,8 +224,8 @@ public class MovableObject : MonoBehaviour
         mMoveSpeed = speed;
         mCurrentMoveTime = 0f;
         mInterruptable = interruptable;
-        mPreviousPosition = mCurrentPosition;
-        mCurrentPosition = -1;
+        //mPreviousPosition = mCurrentPosition;
+        //mCurrentPosition = -1;
         mTargetPosition = 0;
         State = MoveableObjectStates.MOVING;
     }

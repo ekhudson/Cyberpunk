@@ -6,7 +6,7 @@ public class GrendelAudioManager : Singleton<GrendelAudioManager>
 {
 	public Dictionary<GrendelAudioChannel, Dictionary<string, List<AdjustableAudioClip>>> AudioDictionary = new Dictionary<GrendelAudioChannel, Dictionary<string, List<AdjustableAudioClip>>>();
 
-	private List<AdjustableAudioClip> mClipQueue = new List<AdjustableAudioClip>();
+	//private List<AdjustableAudioClip> mClipQueue = new List<AdjustableAudioClip>();
 
 	private void Start()
 	{

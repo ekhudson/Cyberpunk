@@ -11,7 +11,7 @@ public class CharacterEntity : BaseObject
     private Vector3 mCurrentMove = Vector3.zero;
     private bool mIsGrounded = false;
 	private PlayerStates mState = PlayerStates.USING;
-	private int mLayer = 0;
+	//private int mLayer = 0;
 
 	private Ray mCurrentRay;
 	
@@ -58,7 +58,7 @@ public class CharacterEntity : BaseObject
     protected override void Start ()
     {
         base.Start();
-		mLayer = mGameObject.layer;
+		//mLayer = mGameObject.layer;
     }
     
     // Update is called once per frame

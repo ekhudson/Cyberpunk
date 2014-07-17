@@ -28,7 +28,7 @@ public class BrawlerHitboxController : BaseObject
 			hitbox.gameObject.SetActive(true);
 		}
 
-		Vector3 spritePosition = mGameObject.transform.parent.position;
+		//Vector3 spritePosition = mGameObject.transform.parent.position;
 
         Rect hitboxRect = new Rect(setting.Position);       
 

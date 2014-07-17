@@ -10,7 +10,7 @@ public class GrendelObjectPool<T> : BaseObject where T : MonoBehaviour
 
 	private List<T> PoolList = new List<T>();
 
-	protected virtual void Start()
+	protected override void Start()
 	{
 		transform.position = Vector3.zero;
 

@@ -26,7 +26,7 @@ public class BrawlerHitbox : TriggerVolume
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    public override void OnTriggerEnter(Collider other)
     {
         if (HitboxType != HitboxTypes.Attack) //TODO: Somehow make it so attack boxes are the only ones who do collision handling [See above]
         {
@@ -51,7 +51,7 @@ public class BrawlerHitbox : TriggerVolume
 		}
     }
 
-	private void OnDrawGizmos()
+	protected override void OnDrawGizmos()
 	{
 		if (!Application.isPlaying)
 		{

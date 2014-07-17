@@ -35,7 +35,7 @@ public class GrendelFolderEditor : GrendelEditor<GrendelFolder>
     }
 
     [InitializeOnLoad]
-    public class Initialize
+    new public class Initialize
     {
         static Initialize()
         {

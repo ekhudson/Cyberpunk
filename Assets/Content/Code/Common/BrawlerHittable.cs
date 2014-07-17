@@ -4,7 +4,7 @@ using System.Collections;
 public class BrawlerHittable : Entity
 {
 	public bool FlashWhenHit = true;
-	private bool mHasCollider = false;
+	//private bool mHasCollider = false;
 
 	private Color mCurrentFlashColor = Color.white;
 	private float mCurrentFlashTime = 0f;
