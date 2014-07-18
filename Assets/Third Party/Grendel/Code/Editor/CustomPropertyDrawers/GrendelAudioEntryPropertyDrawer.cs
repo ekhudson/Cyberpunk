@@ -14,6 +14,12 @@ public class GrendelAudioEntryPropertyDrawer : PropertyDrawer
 			return;
 		}
 
+		if (GrendelManager.ProjectData == null)
+		{
+			GUILayout.Label("Project Data Missing");
+			return;
+		}
+
 		string[] bankNames = new string[GrendelManager.ProjectData.AudioOptions.AudioBanks.Count];
 
 		int count = 0;
