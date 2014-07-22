@@ -3,6 +3,8 @@ using System.Collections;
 
 public class CPPlayerStateManager : MonoBehaviour 
 {
+    public bool Verbose = false;
+
     public enum PlayerStates
     {
         IDLE,
@@ -54,6 +56,9 @@ public class CPPlayerStateManager : MonoBehaviour
 
     private PlayerStates mPlayerState = PlayerStates.IDLE;
     private float mStateStartTime;
+
+    private const float kVerboseLabelHeight = 24f;
+    private const float kVerboseLabelWidth = 64f;
 
     public PlayerStates PlayerState
     {
@@ -186,5 +191,19 @@ public class CPPlayerStateManager : MonoBehaviour
 
         mPlayerState = newState;
         return true;
+    }
+
+    public void OnGUI()
+    {
+        if (!Verbose)
+        {
+            return;
+        }
+
+        Vector3 pos = transform.position + (transform.up * transform.localScale.y);
+        pos = Camera.main.WorldToScreenPoint(pos);
+        pos.y = Camera.main.pixelHeight - pos.y;
+
+        GUI.Label(new Rect(pos.x - (kVerboseLabelWidth * 0.5f), pos.y, kVerboseLabelWidth, kVerboseLabelHeight), mPlayerState.ToString(), GUI.skin.button);
     }
 }
