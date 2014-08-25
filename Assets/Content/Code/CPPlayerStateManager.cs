@@ -58,7 +58,7 @@ public class CPPlayerStateManager : MonoBehaviour
     private float mStateStartTime;
 
     private const float kVerboseLabelHeight = 24f;
-    private const float kVerboseLabelWidth = 64f;
+    private const float kVerboseLabelWidth = 128f;
 
     public PlayerStates PlayerState
     {
