@@ -56,9 +56,10 @@ public class CPPlayerStateManager : MonoBehaviour
 
     private PlayerStates mPlayerState = PlayerStates.IDLE;
     private float mStateStartTime;
+	private CPPlayerController mPlayerController;
 
     private const float kVerboseLabelHeight = 24f;
-    private const float kVerboseLabelWidth = 64f;
+    private const float kVerboseLabelWidth = 128f;
 
     public PlayerStates PlayerState
     {
@@ -76,6 +77,11 @@ public class CPPlayerStateManager : MonoBehaviour
         }
     }
 
+	public void DependencySetup(CPPlayerController playerController)
+	{
+		mPlayerController = playerController;
+	}
+
     public bool SetState(PlayerStates newState, object sender)
     {
         return SetState(newState, sender, false);
@@ -91,6 +97,9 @@ public class CPPlayerStateManager : MonoBehaviour
         switch (newState)
         {
             case PlayerStates.IDLE:
+            
+                PlayAnimation("GoToIdle");
+            
             break;
             case PlayerStates.IDLE_COLLIDE:
             break;
@@ -192,6 +201,16 @@ public class CPPlayerStateManager : MonoBehaviour
         mPlayerState = newState;
         return true;
     }
+
+	public void PlayAnimation(string trigger)
+	{
+		if (mPlayerController == null || mPlayerController.PlayerAnimator == null) 
+		{
+            return;
+		}
+
+        mPlayerController.PlayerAnimator.SetTrigger(trigger);
+	}
 
     public void OnGUI()
     {

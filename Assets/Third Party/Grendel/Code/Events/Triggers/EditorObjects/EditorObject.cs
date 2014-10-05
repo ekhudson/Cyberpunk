@@ -138,9 +138,7 @@ public class EditorObject : BaseObject, IEditorObject
 	#endregion
 	
 	virtual protected void OnDrawGizmos()
-	{		
-		if (!DebugMode) { return; }
-		
+	{	
 		switch(_state)
 		{
 			case EDITOROBJECTSTATES.ACTIVE:

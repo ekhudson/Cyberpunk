@@ -21,11 +21,8 @@ using System.Collections;
 public class BaseObject : MonoBehaviour
 {
     //PUBLIC VARIABLES
-    public bool DebugMode = false;
-    public bool GameObjectActiveOnStart = true;
     public bool RigidBodyAwakeOnStart = false;
-    //public int UpdatesPerSecond = 30; //not particularly relevant for all objects? Probably belongs on BaseActor
-    
+        
     //PROTECTED REFERENCES
     protected Transform mTransform;
     protected GameObject mGameObject;
@@ -40,10 +37,7 @@ public class BaseObject : MonoBehaviour
     protected bool mIsHidden = false;
     protected EditorObject mLastActivator = null;
     protected Collider mLastCollider = null;
-    
-    //PRIVATE VARIABLES
-	private float mUpdateInterval = 0f;
-        
+           
     //ACCESSORS
     public Transform BaseTransform
     {
@@ -122,30 +116,14 @@ public class BaseObject : MonoBehaviour
         mRigidbody = rigidbody;
 		mParticleSystem = particleSystem;
         mInstanceID = gameObject.GetInstanceID();
-        
-        //calculate the update interval (assuming ideal target of 60 fps)
-        //mUpdateInterval = UpdatesPerSecond / 60f;
-        
+                   
         //check conditions
         if (mRigidbody != null && !RigidBodyAwakeOnStart) { mRigidbody.Sleep(); }
-        if (!GameObjectActiveOnStart) { mGameObject.SetActive(false); }
-                
-        //start coroutines
-        if (mRenderer != null) { StartCoroutine( CheckIsHidden() ); } 
     }
     
     // Use this for initialization
     virtual protected void Start () 
     {
     
-    }
-        
-    IEnumerator CheckIsHidden()
-    {        
-        while(true)
-        {
-            if (mIsHidden && mRenderer.enabled) { mRenderer.enabled = false; }
-            else if (!mIsHidden && !mRenderer.enabled) { mRenderer.enabled = true; }
-            yield return new WaitForSeconds(mUpdateInterval);
-        }        
-    }}
+    }   
+}
