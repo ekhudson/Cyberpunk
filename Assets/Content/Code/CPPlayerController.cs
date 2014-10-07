@@ -41,7 +41,7 @@ public class CPPlayerController : BaseObject
 	// Use this for initialization
 	protected override void Start () 
 	{
-			
+        StateManager.DependencySetup(this);
 	}
 	
 	// Update is called once per frame
