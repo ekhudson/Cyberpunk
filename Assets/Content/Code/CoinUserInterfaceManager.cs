@@ -9,42 +9,76 @@ public class CoinUserInterfaceManager : Singleton<CoinUserInterfaceManager>
     private Ray mCurrentRay = new Ray();
     private RaycastHit mCurretRaycastHit;
 
+    private Ray mCurrentBoardRay = new Ray();
+    private RaycastHit mCurrentBoardRayHit;
+
     private Camera mCamera;
     private Transform mCameraTransform;
 
     private int mCoinLayermask = 1;
+    private int mBoardLayerMask = 1;
 
     private GameObject mCurrentCollidingObject = null;
+
+    private static Vector3 mLastMousePos = Vector3.zero;
+    private static Vector3 mCurrentMouseDelta = Vector3.zero;
+
+    private static Vector3 mMouseBoardPosition = Vector3.zero;
+
+    public static Vector3 MouseDeltaVector3
+    {
+        get
+        {
+            return mCurrentMouseDelta;
+        }
+    }
+
+    public static Vector2 MouseDeltaVector2
+    {
+        get
+        {
+           return new Vector2(mCurrentMouseDelta.x, mCurrentMouseDelta.y);
+        }
+    }
+
+    public static Vector3 MouseBoardPosition
+    {
+        get
+        {
+            return mMouseBoardPosition;
+        }
+    }
 
 	// Use this for initialization
 	private void Start () 
     {
         mCamera = Camera.main;
         mCameraTransform = mCamera.transform;
-
-        mCoinLayermask = 1 << LayerMask.NameToLayer("CoinLayer");
+        mLastMousePos = Input.mousePosition;
+        mBoardLayerMask = 1 << LayerMask.NameToLayer("BoardLayer");
 	}
 	
 	// Update is called once per frame
 	private void OnGUI () 
     {
-        CoinCast();
-
-        if (mCurrentCollidingObject != null)
-        {
-            mCurrentCollidingObject.renderer.material.color = Color.cyan;
-        }
+        CalculateMouseDelta();
+        GetBoardMousePosition();
 	}
 
-    private void CoinCast()
+    private void GetBoardMousePosition()
     {
-        mCurrentRay.direction = mCameraTransform.forward;
-        mCurrentRay.origin = mCameraTransform.position;
+        mCurrentBoardRay = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 
-        if (Physics.Raycast(mCurrentRay, out mCurretRaycastHit, MaxRaycastLength, mCoinLayermask))
+        if (Physics.Raycast(mCurrentBoardRay, out mCurrentBoardRayHit, 1000f, mBoardLayerMask))
         {
-            Debug.Log("Colliding with "+ mCurretRaycastHit.collider.gameObject.name); 
-            mCurrentCollidingObject = mCurretRaycastHit.collider.gameObject;
+            mMouseBoardPosition = mCurrentBoardRayHit.point;
         }
     }
+
+    private void CalculateMouseDelta()
+    {
+        mCurrentMouseDelta = mLastMousePos - Input.mousePosition;
+        mLastMousePos = Input.mousePosition;
+    }
+  
 }
