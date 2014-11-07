@@ -12,12 +12,15 @@ public class CoinScript : BaseObject
 
     public Renderer HighlightRenderer;
     public Rigidbody CoinRigidbody;
+    public float MaxVelocity;
 
     private CoinStates mCoinState = CoinStates.IDLE;
 
     private void Start()
     {
         HighlightRenderer.enabled = false;
+
+
     }
 
     private void FixedUpdate()
@@ -33,32 +36,37 @@ public class CoinScript : BaseObject
                 
             case CoinStates.GRABBED:
 
-                Vector3 forceVector = CoinUserInterfaceManager.MouseBoardPosition - mTransform.position;
-                CoinRigidbody.AddRelativeForce(forceVector, ForceMode.Acceleration);
+                //Vector3 forceVector = CoinUserInterfaceManager.MouseBoardPosition - mTransform.position;
+                //CoinRigidbody.AddRelativeForce(forceVector, ForceMode.Acceleration);
 
             break;
+        }
+
+        if (mRigidbody.velocity.sqrMagnitude > MaxVelocity * MaxVelocity)
+        {
+            Vector3.ClampMagnitude(mRigidbody.velocity, MaxVelocity);
         }
     }
 
     private void OnDrawGizmos()
     {
-        Vector3 forceVector = CoinUserInterfaceManager.MouseBoardPosition - mTransform.position;
-
-        Gizmos.DrawLine(mTransform.position, mTransform.position + forceVector);
-
-        switch (mCoinState)
-        {
-            case CoinStates.IDLE:
-                break;
-                
-            case CoinStates.HIGHLIGHTED:
-                
-            break;
-                
-            case CoinStates.GRABBED:         
-
-            break;
-        }
+//        Vector3 forceVector = CoinUserInterfaceManager.MouseBoardPosition - mTransform.position;
+//
+//        Gizmos.DrawLine(mTransform.position, mTransform.position + forceVector);
+//
+//        switch (mCoinState)
+//        {
+//            case CoinStates.IDLE:
+//                break;
+//                
+//            case CoinStates.HIGHLIGHTED:
+//                
+//            break;
+//                
+//            case CoinStates.GRABBED:         
+//
+//            break;
+//        }
     }
 
     private void OnMouseOver()
