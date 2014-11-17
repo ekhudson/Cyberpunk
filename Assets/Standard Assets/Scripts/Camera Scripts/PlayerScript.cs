@@ -11,8 +11,12 @@ public class PlayerScript : MonoBehaviour
     public float PlayerCoinDistanceFromCamera = 10f;
     public float ShotDelay = 5f;
     public Vector3 ShotReloadOffset = new Vector3(0.1f, 0.1f, 0f);
+    public Vector3 CoinCenterOffset = Vector3.zero;
+    public float PanSpeed = 0.25f;
+    public float OffsetMag = 2f;
+    public float MaxAngularVelocity = 35f;
 
-
+    private bool mNeedReload = false;
     private Ray mRay;
     private RaycastHit mHit;
 
@@ -21,6 +25,7 @@ public class PlayerScript : MonoBehaviour
     private float mCountHeight = 0f;
     private Camera mCamera;
     private GameObject mInventoryCoin;
+    private float mCoinRadius = 10f;
 
     private float mCurrentReloadTime = 0f;
     private Vector3 mCurrentReloadPosition = Vector3.zero;
@@ -45,6 +50,8 @@ public class PlayerScript : MonoBehaviour
         mInventoryCoin.rigidbody.isKinematic = true;
         mInventoryCoin.collider.enabled = false;
         mInventoryCoin.transform.position = mCamera.ViewportToWorldPoint(ShotReloadOffset);
+
+        mCoinRadius = PlayerCoinPrefab.renderer.bounds.extents.x;
    
     }
 
@@ -65,27 +72,78 @@ public class PlayerScript : MonoBehaviour
 
         DrawInventory();
 
-        if (mCurrentReloadTime < ShotDelay)
+        if (mNeedReload)
         {
-            mCurrentReloadTime += Time.deltaTime;
-
-            float time = mCurrentReloadTime / ShotDelay;
-
-            mPreviewCoin.transform.position = Vector3.Slerp(mCurrentReloadPosition, mCamera.transform.position + (mCamera.transform.forward * PlayerCoinDistanceFromCamera), time);
-            mPreviewRenderer.transform.forward = Vector3.Slerp(Vector3.down, mCamera.transform.forward, time);
-            mPreviewCoin.transform.rotation = Quaternion.Slerp(Quaternion.Euler(-PlayerCoinStartingRotation), Quaternion.Euler(PlayerCoinStartingRotation), time);
-            return;
-        }
-
-        mPreviewCoin.transform.position = (mCamera.transform.position + (mCamera.transform.forward * PlayerCoinDistanceFromCamera));
-        mPreviewCoin.transform.forward = mCamera.transform.forward;
-        mPreviewCoin.transform.Rotate(PlayerCoinStartingRotation);
-
-        if (Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(0))
+            if (Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(0))
+            {
+                mNeedReload = false;
+                Reload();
+            }
+        } 
+        else
         {
-            SpawnCoin();
-            Reload();
+            if (mCurrentReloadTime < ShotDelay)
+            {
+                mCurrentReloadTime += Time.deltaTime;
+
+                float time = mCurrentReloadTime / ShotDelay;
+
+                mPreviewCoin.transform.position = Vector3.Slerp(mCurrentReloadPosition, mCamera.transform.position + (mCamera.transform.forward * PlayerCoinDistanceFromCamera), time);
+                mPreviewRenderer.transform.forward = Vector3.Slerp(Vector3.down, mCamera.transform.forward, time);
+                mPreviewCoin.transform.rotation = Quaternion.Slerp(Quaternion.Euler(-PlayerCoinStartingRotation), Quaternion.Euler(PlayerCoinStartingRotation), time);
+                return;
+            }
+
+            mPreviewCoin.transform.position = (mCamera.transform.position + (mCamera.transform.forward * PlayerCoinDistanceFromCamera));
+            mPreviewCoin.transform.forward = mCamera.transform.forward;
+            mPreviewCoin.transform.Rotate(PlayerCoinStartingRotation);
+
+            if (Input.GetKeyUp(KeyCode.Escape))
+            {
+                CoinCenterOffset = Vector3.zero;
+            }
+
+            if (Input.GetMouseButton(2))
+            {
+                Pan();
+            }
+
+            if (Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(0))
+            {
+                SpawnCoin();
+                mNeedReload =  true;
+               // Reload();
+            }
         }
+    }
+
+    private void OnGUI()
+    {
+        Vector3 pos = mCamera.transform.position + (mCamera.transform.forward * PlayerCoinDistanceFromCamera);      
+
+        pos += mCamera.transform.up * CoinCenterOffset.y;
+        pos += mCamera.transform.right * CoinCenterOffset.x;
+       
+
+        //pos.y = mCamera.pixelHeight - pos.y;
+
+        pos = mCamera.WorldToScreenPoint(pos);   
+
+        
+        pos.y -= 4f;
+        pos.x -= 4f;
+
+        GUI.color = Color.red;
+        GUI.Label(new Rect(pos.x, pos.y, 8f, 8f), "X", GUI.skin.box);
+        GUI.color = Color.white;
+
+    }
+
+    private void Pan()
+    {
+        CoinCenterOffset.x = Mathf.Clamp(CoinCenterOffset.x + Input.GetAxis("Mouse X") * PanSpeed, -mCoinRadius, mCoinRadius);
+        CoinCenterOffset.y = Mathf.Clamp(CoinCenterOffset.y + Input.GetAxis("Mouse Y") * PanSpeed, -mCoinRadius, mCoinRadius);
+        CoinCenterOffset = Vector3.ClampMagnitude(CoinCenterOffset, mCoinRadius);
     }
 
     private void DrawInventory()
@@ -100,6 +158,8 @@ public class PlayerScript : MonoBehaviour
         mCurrentReloadTime = 0;
         mCurrentReloadPosition = mCamera.ViewportToWorldPoint(ShotReloadOffset);
         mPreviewCoin.transform.position = mCurrentReloadPosition;
+        mPreviewRenderer.enabled = true;
+        mCoinRadius = PlayerCoinPrefab.renderer.bounds.extents.x;
     }
 
     private void SpawnCoin()
@@ -107,8 +167,15 @@ public class PlayerScript : MonoBehaviour
         Vector3 pos = mPreviewCoin.transform.position;
         Quaternion rot = mPreviewCoin.transform.rotation;
 
-        GameObject playerCoin = (GameObject)GameObject.Instantiate(PlayerCoinPrefab, pos, rot);
+        mPreviewRenderer.enabled = false;
 
-        playerCoin.rigidbody.AddForceAtPosition(mCamera.transform.forward * CoinForce, playerCoin.transform.position, ForceMode.VelocityChange);
+        GameObject playerCoin = (GameObject)GameObject.Instantiate(PlayerCoinPrefab, pos, rot);
+        playerCoin.rigidbody.maxAngularVelocity = MaxAngularVelocity;
+
+        Vector3 centerOffset = Vector3.zero;
+        centerOffset += playerCoin.transform.right * (CoinCenterOffset.x * OffsetMag);
+        centerOffset += playerCoin.transform.up * (CoinCenterOffset.y * OffsetMag);
+
+        playerCoin.rigidbody.AddForceAtPosition(mCamera.transform.forward * CoinForce, playerCoin.transform.position + centerOffset - (mCamera.transform.forward * -1), ForceMode.Force);
     }
 }
