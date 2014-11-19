@@ -4,6 +4,8 @@ using System.Collections;
 public class CoinUserInterfaceManager : Singleton<CoinUserInterfaceManager> 
 {
 
+    public float DefaultTimeScale = 1f;
+    public float SlowMoTimeScale = 0.5f;
     public float MaxRaycastLength = 100f;
 
     private Ray mCurrentRay = new Ray();
@@ -24,6 +26,10 @@ public class CoinUserInterfaceManager : Singleton<CoinUserInterfaceManager>
     private static Vector3 mCurrentMouseDelta = Vector3.zero;
 
     private static Vector3 mMouseBoardPosition = Vector3.zero;
+
+    private const float kMinTimeScale = 0.05f;
+    private const float kMaxTimeScale = 1f;
+
 
     public static Vector3 MouseDeltaVector3
     {

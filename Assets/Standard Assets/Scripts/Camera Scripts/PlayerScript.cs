@@ -29,6 +29,10 @@ public class PlayerScript : MonoBehaviour
 
     private float mCurrentReloadTime = 0f;
     private Vector3 mCurrentReloadPosition = Vector3.zero;
+    private Vector3 mPreviousForceAmount = Vector3.zero;
+   
+
+   // private  mMouseOrbitScript;
 
     private void Start()
     {
@@ -52,7 +56,7 @@ public class PlayerScript : MonoBehaviour
         mInventoryCoin.transform.position = mCamera.ViewportToWorldPoint(ShotReloadOffset);
 
         mCoinRadius = PlayerCoinPrefab.renderer.bounds.extents.x;
-   
+       // mMouseOrbitScript = gameObject.GetComponent<MouseOrbit>();
     }
 
 	private void LateUpdate()
@@ -119,6 +123,9 @@ public class PlayerScript : MonoBehaviour
 
     private void OnGUI()
     {
+
+        GUI.Label(new Rect(10f, 10f, 512f, 64f), "Previous launch vector: " + mPreviousForceAmount.ToString());
+
         Vector3 pos = mCamera.transform.position + (mCamera.transform.forward * PlayerCoinDistanceFromCamera);      
 
         pos += mCamera.transform.up * CoinCenterOffset.y;
@@ -162,6 +169,31 @@ public class PlayerScript : MonoBehaviour
         mCoinRadius = PlayerCoinPrefab.renderer.bounds.extents.x;
     }
 
+    private void OnDrawGizmos()
+    {
+        if (mCamera == null)
+        {
+            return;
+        }
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(mCamera.transform.position, mCamera.transform.position + (mCamera.transform.forward * 10f));
+        Gizmos.color = Color.white;
+
+        Vector3 force = mCamera.transform.forward * CoinForce;
+        Vector3 forcePos = mPreviewCoin.transform.position;
+        forcePos += mPreviewCoin.transform.right * (CoinCenterOffset.x * OffsetMag);
+        forcePos += mPreviewCoin.transform.up * (CoinCenterOffset.y * OffsetMag);
+        forcePos -= (mCamera.transform.forward *  2);
+
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawSphere(forcePos, 0.05f);
+
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawLine(forcePos, forcePos + force);
+        Gizmos.color = Color.white;
+    }
+
     private void SpawnCoin()
     {
         Vector3 pos = mPreviewCoin.transform.position;
@@ -176,6 +208,12 @@ public class PlayerScript : MonoBehaviour
         centerOffset += playerCoin.transform.right * (CoinCenterOffset.x * OffsetMag);
         centerOffset += playerCoin.transform.up * (CoinCenterOffset.y * OffsetMag);
 
-        playerCoin.rigidbody.AddForceAtPosition(mCamera.transform.forward * CoinForce, playerCoin.transform.position + centerOffset - (mCamera.transform.forward * -1), ForceMode.Force);
+        Vector3 force = mCamera.transform.forward * CoinForce;
+
+        mPreviousForceAmount = force;
+
+        playerCoin.rigidbody.AddForceAtPosition(force, playerCoin.transform.position + centerOffset - (mCamera.transform.forward * 2), ForceMode.VelocityChange);
+
+
     }
 }
