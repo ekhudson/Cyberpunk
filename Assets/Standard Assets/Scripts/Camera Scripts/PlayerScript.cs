@@ -5,8 +5,9 @@ public class PlayerScript : MonoBehaviour
 {
     public GameObject PlayerCoinPrefab;
     public BoxCollider CoinBounds;
-    public LayerMask CoinBoundsLayerMask;
-    public float CoinForce = 25f;
+    public LayerMask CoinLayerMask;
+    public float CoinForceMin = 5f;
+    public float CoinForceMax = 25f;
     public Vector3 PlayerCoinStartingRotation = new Vector3(90f, 0f, 0f);
     public float PlayerCoinDistanceFromCamera = 10f;
     public float ShotDelay = 5f;
@@ -15,10 +16,14 @@ public class PlayerScript : MonoBehaviour
     public float PanSpeed = 0.25f;
     public float OffsetMag = 2f;
     public float MaxAngularVelocity = 35f;
+    public float StrengthBarHeight = 32f;
+    public Color StrengthBarColor = Color.yellow;
 
     private bool mNeedReload = false;
     private Ray mRay;
     private RaycastHit mHit;
+
+    private float mCurrentStrength = 1f;
 
     private GameObject mPreviewCoin;
     private Renderer mPreviewRenderer;
@@ -30,9 +35,8 @@ public class PlayerScript : MonoBehaviour
     private float mCurrentReloadTime = 0f;
     private Vector3 mCurrentReloadPosition = Vector3.zero;
     private Vector3 mPreviousForceAmount = Vector3.zero;
-   
 
-   // private  mMouseOrbitScript;
+    private bool mMouseOnCoin = false;
 
     private void Start()
     {
@@ -52,29 +56,18 @@ public class PlayerScript : MonoBehaviour
 
         mInventoryCoin = (GameObject)GameObject.Instantiate(PlayerCoinPrefab);
         mInventoryCoin.rigidbody.isKinematic = true;
-        mInventoryCoin.collider.enabled = false;
+        mInventoryCoin.collider.isTrigger = true;
         mInventoryCoin.transform.position = mCamera.ViewportToWorldPoint(ShotReloadOffset);
 
         mCoinRadius = PlayerCoinPrefab.renderer.bounds.extents.x;
-       // mMouseOrbitScript = gameObject.GetComponent<MouseOrbit>();
+
     }
 
 	private void LateUpdate()
     {
-       // mRay = new Ray(mCamera.transform.position, mCamera.transform.forward);
-       // mHit = new RaycastHit();
-
-//        if (Physics.Raycast(mRay, out mHit, 100f, CoinBoundsLayerMask))
-//        {
-//            Vector3 point = mHit.point;
-//            point.y = mHit.collider.transform.position.y + mCountHeight;
-//            mPreviewCoin.transform.position = point;
-//            mPreviewCoin.transform.forward = Camera.main.transform.forward;
-//            mPreviewCoin.transform.Rotate(PlayerCoinStartingRotation);
-//            mPreviewRenderer.enabled = true;
-//        }
-
         DrawInventory();
+
+        mCurrentStrength = Mathf.Clamp((mCurrentStrength + Input.GetAxis("Mouse ScrollWheel")), 0f, 1f);
 
         if (mNeedReload)
         {
@@ -85,7 +78,7 @@ public class PlayerScript : MonoBehaviour
             }
         } 
         else
-        {
+        {    
             if (mCurrentReloadTime < ShotDelay)
             {
                 mCurrentReloadTime += Time.deltaTime;
@@ -109,7 +102,33 @@ public class PlayerScript : MonoBehaviour
 
             if (Input.GetMouseButton(2))
             {
-                Pan();
+                //Pan();
+            }
+
+            Vector3 mousePos = Input.mousePosition;
+
+            mRay = mCamera.ScreenPointToRay(mousePos);
+            mHit = new RaycastHit();
+            
+            if (Physics.Raycast(mRay, out mHit, 100f, CoinLayerMask))
+            {
+                if (mHit.collider.gameObject != mPreviewCoin.gameObject)
+                {
+                    mMouseOnCoin = false;
+                    return;
+                }
+                else
+                {
+                    CoinCenterOffset = mPreviewCoin.transform.InverseTransformPoint(mHit.point);
+                    CoinCenterOffset.y = CoinCenterOffset.z * -1; //for some reason InverseTransformPoint puts y in z?
+                    CoinCenterOffset.z = 0f;
+                    mMouseOnCoin = true;
+                }
+            }
+            else
+            {
+                mMouseOnCoin = false;
+                return;
             }
 
             if (Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(0))
@@ -123,20 +142,22 @@ public class PlayerScript : MonoBehaviour
 
     private void OnGUI()
     {
+        DrawStrength();
 
-        GUI.Label(new Rect(10f, 10f, 512f, 64f), "Previous launch vector: " + mPreviousForceAmount.ToString());
+        if (mNeedReload || (mCurrentReloadTime < ShotDelay) || !mMouseOnCoin)
+        {
+            return;
+        }
 
-        Vector3 pos = mCamera.transform.position + (mCamera.transform.forward * PlayerCoinDistanceFromCamera);      
+        Vector3 pos = mPreviewCoin.transform.position;   
 
         pos += mCamera.transform.up * CoinCenterOffset.y;
         pos += mCamera.transform.right * CoinCenterOffset.x;
        
-
-        //pos.y = mCamera.pixelHeight - pos.y;
-
         pos = mCamera.WorldToScreenPoint(pos);   
+              
+        pos.y = mCamera.pixelHeight - pos.y;
 
-        
         pos.y -= 4f;
         pos.x -= 4f;
 
@@ -144,6 +165,24 @@ public class PlayerScript : MonoBehaviour
         GUI.Label(new Rect(pos.x, pos.y, 8f, 8f), "X", GUI.skin.box);
         GUI.color = Color.white;
 
+    }
+
+    private void DrawStrength()
+    {
+        float maxWidth = (mCamera.pixelWidth - (StrengthBarHeight * 2));
+        Rect barRect = new Rect(StrengthBarHeight, mCamera.pixelHeight - StrengthBarHeight, maxWidth, StrengthBarHeight);
+
+        GUI.color = Color.gray;
+        GUI.Box(barRect, string.Empty);
+
+        float currentWidth = Mathf.Lerp(0f, maxWidth, mCurrentStrength);
+
+        barRect.width = currentWidth;
+
+        GUI.color = StrengthBarColor;
+        GUI.Box(barRect, string.Empty);
+
+        GUI.color = Color.white;
     }
 
     private void Pan()
@@ -167,6 +206,7 @@ public class PlayerScript : MonoBehaviour
         mPreviewCoin.transform.position = mCurrentReloadPosition;
         mPreviewRenderer.enabled = true;
         mCoinRadius = PlayerCoinPrefab.renderer.bounds.extents.x;
+       
     }
 
     private void OnDrawGizmos()
@@ -180,7 +220,7 @@ public class PlayerScript : MonoBehaviour
         Gizmos.DrawLine(mCamera.transform.position, mCamera.transform.position + (mCamera.transform.forward * 10f));
         Gizmos.color = Color.white;
 
-        Vector3 force = mCamera.transform.forward * CoinForce;
+        Vector3 force = mCamera.transform.forward * CoinForceMax;
         Vector3 forcePos = mPreviewCoin.transform.position;
         forcePos += mPreviewCoin.transform.right * (CoinCenterOffset.x * OffsetMag);
         forcePos += mPreviewCoin.transform.up * (CoinCenterOffset.y * OffsetMag);
@@ -208,12 +248,11 @@ public class PlayerScript : MonoBehaviour
         centerOffset += playerCoin.transform.right * (CoinCenterOffset.x * OffsetMag);
         centerOffset += playerCoin.transform.up * (CoinCenterOffset.y * OffsetMag);
 
-        Vector3 force = mCamera.transform.forward * CoinForce;
+        Vector3 force = mCamera.transform.forward * (Mathf.Lerp(CoinForceMin, CoinForceMax, mCurrentStrength));
 
         mPreviousForceAmount = force;
 
         playerCoin.rigidbody.AddForceAtPosition(force, playerCoin.transform.position + centerOffset - (mCamera.transform.forward * 2), ForceMode.VelocityChange);
-
 
     }
 }
