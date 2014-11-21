@@ -31,7 +31,10 @@ public class MouseOrbitScript : MonoBehaviour
 
     private void  LateUpdate () 
     {
-        if (target && Input.GetMouseButton(1)) {
+        if ( (target && Input.GetMouseButton(1)) ||
+             (target && target.rigidbody && target.rigidbody.velocity != Vector3.zero) ) 
+        
+        {
             x += Input.GetAxis("Mouse X") * xSpeed * Time.deltaTime;
             y += Input.GetAxis("Mouse Y") * ySpeed * Time.deltaTime;
             

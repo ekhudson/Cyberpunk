@@ -23,7 +23,7 @@ public class PlayerScript : MonoBehaviour
     private Ray mRay;
     private RaycastHit mHit;
 
-    private float mCurrentStrength = 1f;
+    private float mCurrentStrength = 0.5f;
 
     private GameObject mPreviewCoin;
     private Renderer mPreviewRenderer;
@@ -37,6 +37,9 @@ public class PlayerScript : MonoBehaviour
     private Vector3 mPreviousForceAmount = Vector3.zero;
 
     private bool mMouseOnCoin = false;
+
+    private MouseOrbitScript mOrbitScript;
+    private Transform mOriginalOrbitTarget;
 
     private void Start()
     {
@@ -56,10 +59,14 @@ public class PlayerScript : MonoBehaviour
 
         mInventoryCoin = (GameObject)GameObject.Instantiate(PlayerCoinPrefab);
         mInventoryCoin.rigidbody.isKinematic = true;
-        mInventoryCoin.collider.isTrigger = true;
+        mInventoryCoin.GetComponentInChildren<Collider>().isTrigger = true;
         mInventoryCoin.transform.position = mCamera.ViewportToWorldPoint(ShotReloadOffset);
 
         mCoinRadius = PlayerCoinPrefab.renderer.bounds.extents.x;
+
+        mOrbitScript = GetComponent<MouseOrbitScript>();
+
+        mOriginalOrbitTarget = mOrbitScript.target;
 
     }
 
@@ -112,7 +119,12 @@ public class PlayerScript : MonoBehaviour
             
             if (Physics.Raycast(mRay, out mHit, 100f, CoinLayerMask))
             {
-                if (mHit.collider.gameObject != mPreviewCoin.gameObject)
+                if (mHit.collider.transform.parent == null)
+                {
+                    return;
+                }
+
+                if (mHit.collider.transform.parent.gameObject != mPreviewCoin.gameObject)
                 {
                     mMouseOnCoin = false;
                     return;
@@ -201,6 +213,8 @@ public class PlayerScript : MonoBehaviour
 
     private void Reload()
     {
+        mOrbitScript.target = mOriginalOrbitTarget;
+        Time.timeScale = 1f;
         mCurrentReloadTime = 0;
         mCurrentReloadPosition = mCamera.ViewportToWorldPoint(ShotReloadOffset);
         mPreviewCoin.transform.position = mCurrentReloadPosition;
@@ -248,11 +262,16 @@ public class PlayerScript : MonoBehaviour
         centerOffset += playerCoin.transform.right * (CoinCenterOffset.x * OffsetMag);
         centerOffset += playerCoin.transform.up * (CoinCenterOffset.y * OffsetMag);
 
-        Vector3 force = mCamera.transform.forward * (Mathf.Lerp(CoinForceMin, CoinForceMax, mCurrentStrength));
+        Vector3 force = mPreviewCoin.transform.position - mCamera.transform.position; //mCamera.transform.forward * (Mathf.Lerp(CoinForceMin, CoinForceMax, mCurrentStrength));
+
+        force *= (Mathf.Lerp(CoinForceMin, CoinForceMax, mCurrentStrength));
 
         mPreviousForceAmount = force;
 
-        playerCoin.rigidbody.AddForceAtPosition(force, playerCoin.transform.position + centerOffset - (mCamera.transform.forward * 2), ForceMode.VelocityChange);
+        playerCoin.rigidbody.AddForceAtPosition(force, playerCoin.transform.position + centerOffset - (mCamera.transform.forward * 0.25f), ForceMode.VelocityChange);
+        mOrbitScript.target = playerCoin.transform;
+        Time.timeScale = 0.45f;
+
 
     }
 }
