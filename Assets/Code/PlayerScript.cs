@@ -18,6 +18,7 @@ public class PlayerScript : MonoBehaviour
     public float MaxAngularVelocity = 35f;
     public float StrengthBarHeight = 32f;
     public Color StrengthBarColor = Color.yellow;
+    public bool FollowCoins = true;
 
     private bool mNeedReload = false;
     private Ray mRay;
@@ -39,13 +40,17 @@ public class PlayerScript : MonoBehaviour
     private bool mMouseOnCoin = false;
 
     private MouseOrbitScript mOrbitScript;
-    private Transform mOriginalOrbitTarget;
+    private float mDefaultFixedTimeStep;
+
+    private GameObject mLastFiredCoin;
 
     private void Start()
     {
         mCamera = Camera.main;
         mPreviewCoin = (GameObject)GameObject.Instantiate(PlayerCoinPrefab);
         mPreviewRenderer = mPreviewCoin.GetComponent<MeshRenderer>();
+
+        mDefaultFixedTimeStep = Time.fixedDeltaTime;
 
         foreach (Material mat in mPreviewRenderer.materials)
         {
@@ -54,6 +59,16 @@ public class PlayerScript : MonoBehaviour
      
         mPreviewCoin.rigidbody.isKinematic = true;
         mPreviewCoin.transform.rotation = Quaternion.Euler(PlayerCoinStartingRotation);
+        mPreviewCoin.name = "Preview Coin";
+
+        mPreviewCoin.layer = LayerMask.NameToLayer("PreviewCoinLayer");
+        
+        foreach(Transform child in mPreviewCoin.transform)
+        {
+            child.gameObject.layer = LayerMask.NameToLayer("PreviewCoinLayer");
+        }
+
+
         mCountHeight = mPreviewRenderer.bounds.extents.y;
         mCurrentReloadPosition = mCamera.ViewportToWorldPoint(ShotReloadOffset);
 
@@ -66,8 +81,7 @@ public class PlayerScript : MonoBehaviour
 
         mOrbitScript = GetComponent<MouseOrbitScript>();
 
-        mOriginalOrbitTarget = mOrbitScript.target;
-
+        EventManager.Instance.AddHandler<PlayerCoinImpactEvent>(PlayerCoinImpactEventHandler);
     }
 
 	private void LateUpdate()
@@ -154,6 +168,8 @@ public class PlayerScript : MonoBehaviour
 
     private void OnGUI()
     {
+        DrawDebug();
+
         DrawStrength();
 
         if (mNeedReload || (mCurrentReloadTime < ShotDelay) || !mMouseOnCoin)
@@ -177,6 +193,24 @@ public class PlayerScript : MonoBehaviour
         GUI.Label(new Rect(pos.x, pos.y, 8f, 8f), "X", GUI.skin.box);
         GUI.color = Color.white;
 
+    }
+
+    private void DrawDebug()
+    {
+        GUILayout.BeginArea(new Rect(0,0, Screen.width, Screen.height));
+
+        FollowCoins = GUILayout.Toggle(FollowCoins, "Follow");
+
+        GUILayout.Label("Time Scale: " + Time.timeScale.ToString());
+        GUILayout.Label("Fixed Delta Time: " + Time.fixedDeltaTime.ToString());
+        GUILayout.Label("Camera State: " + mOrbitScript.GetState.ToString());
+
+        if (mLastFiredCoin != null)
+        {
+            GUILayout.Label("Coin Velocity: " + mLastFiredCoin.rigidbody.velocity.ToString());
+        }
+
+        GUILayout.EndArea();
     }
 
     private void DrawStrength()
@@ -213,8 +247,9 @@ public class PlayerScript : MonoBehaviour
 
     private void Reload()
     {
-        mOrbitScript.target = mOriginalOrbitTarget;
+        mOrbitScript.SetState(MouseOrbitScript.CameraStates.IDLE);
         Time.timeScale = 1f;
+        //Time.fixedDeltaTime = mDefaultFixedTimeStep;
         mCurrentReloadTime = 0;
         mCurrentReloadPosition = mCamera.ViewportToWorldPoint(ShotReloadOffset);
         mPreviewCoin.transform.position = mCurrentReloadPosition;
@@ -268,10 +303,28 @@ public class PlayerScript : MonoBehaviour
 
         mPreviousForceAmount = force;
 
+        mLastFiredCoin = playerCoin;
+
         playerCoin.rigidbody.AddForceAtPosition(force, playerCoin.transform.position + centerOffset - (mCamera.transform.forward * 0.25f), ForceMode.VelocityChange);
-        mOrbitScript.target = playerCoin.transform;
-        Time.timeScale = 0.45f;
 
+        playerCoin.name = "Launched Coin";       
 
+        if (FollowCoins)
+        {
+            mOrbitScript.SetState(MouseOrbitScript.CameraStates.FOLLOWING_COIN);
+            mOrbitScript.SetTarget(playerCoin.transform);
+            Time.timeScale = 0.45f;
+            //Time.fixedDeltaTime = mDefaultFixedTimeStep * (Time.timeScale / 1f);
+        }
+    }
+
+    public void PlayerCoinImpactEventHandler(object sender, PlayerCoinImpactEvent impactEvent)
+    {
+        if (FollowCoins && mOrbitScript.SecondaryFollowPoint == null && impactEvent.PlayerCoin.FreshCoin)
+        {
+            //impactEvent.PlayerCoin.FreshCoin = false;
+            //mOrbitScript.SetSecondaryFollowPoint(impactEvent.CollisionData.transform);
+            mOrbitScript.NewSecondFollowPoint(impactEvent.CollisionData.contacts[0].point);
+        }
     }
 }
