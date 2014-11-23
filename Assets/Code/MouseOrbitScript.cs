@@ -63,7 +63,7 @@ public class MouseOrbitScript : BaseObject
     private void  LateUpdate () 
     {
         Quaternion rotation = mTransform.rotation;
-        Vector3 position = mTransform.position;
+        Vector3 position = mTransform.position;       
 
         if (mCameraState == CameraStates.IDLE)
         {
@@ -85,12 +85,17 @@ public class MouseOrbitScript : BaseObject
         }
 
         position = rotation * new Vector3(0.0f, 0.0f, -mCurrentDistace) + mCurrentTarget.position;
+
+
         transform.rotation = rotation;
+
+
         transform.position = position;
+
 
         if (mCameraState == CameraStates.FOLLOWING_COIN && mSecondFollowPoint != null)
         {
-
+            
             mTransform.rotation = Quaternion.RotateTowards(mTransform.rotation, Quaternion.LookRotation( (mSecondFollowPoint.position - transform.position).normalized ), 2f);
             //mTransform.LookAt(mSecondFollowPoint.position);
         }

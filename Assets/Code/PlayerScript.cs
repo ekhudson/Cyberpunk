@@ -154,7 +154,8 @@ public class PlayerScript : MonoBehaviour
             else
             {
                 mMouseOnCoin = false;
-                return;
+                CoinCenterOffset = Vector3.zero;
+                //return;
             }
 
             if (Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(0))
@@ -208,6 +209,7 @@ public class PlayerScript : MonoBehaviour
         if (mLastFiredCoin != null)
         {
             GUILayout.Label("Coin Velocity: " + mLastFiredCoin.rigidbody.velocity.ToString());
+            GUILayout.Label("Previous Force Amount: " + mPreviousForceAmount.ToString());
         }
 
         GUILayout.EndArea();
@@ -222,6 +224,10 @@ public class PlayerScript : MonoBehaviour
         GUI.Box(barRect, string.Empty);
 
         float currentWidth = Mathf.Lerp(0f, maxWidth, mCurrentStrength);
+
+        float force = (Mathf.Lerp(CoinForceMin, CoinForceMax, mCurrentStrength));
+
+        GUI.Label(barRect, "Current Strength: " + System.Math.Round(force,2).ToString());
 
         barRect.width = currentWidth;
 
@@ -247,6 +253,7 @@ public class PlayerScript : MonoBehaviour
 
     private void Reload()
     {
+        mLastFiredCoin.GetComponent<PlayerCoinScript>().FreshCoin = false;
         mOrbitScript.SetState(MouseOrbitScript.CameraStates.IDLE);
         Time.timeScale = 1f;
         //Time.fixedDeltaTime = mDefaultFixedTimeStep;
@@ -294,8 +301,12 @@ public class PlayerScript : MonoBehaviour
         playerCoin.rigidbody.maxAngularVelocity = MaxAngularVelocity;
 
         Vector3 centerOffset = Vector3.zero;
-        centerOffset += playerCoin.transform.right * (CoinCenterOffset.x * OffsetMag);
-        centerOffset += playerCoin.transform.up * (CoinCenterOffset.y * OffsetMag);
+
+        float magX = Mathf.Lerp(0f, OffsetMag, Mathf.Abs(CoinCenterOffset.x) * 2);
+        float magY = Mathf.Lerp(0f,OffsetMag, Mathf.Abs(CoinCenterOffset.y) * 2);
+
+        centerOffset += mCamera.transform.right * (CoinCenterOffset.x * magX);
+        centerOffset += mCamera.transform.up * (CoinCenterOffset.y * magY);
 
         Vector3 force = mPreviewCoin.transform.position - mCamera.transform.position; //mCamera.transform.forward * (Mathf.Lerp(CoinForceMin, CoinForceMax, mCurrentStrength));
 
