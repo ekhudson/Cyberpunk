@@ -308,7 +308,7 @@ public class PlayerScript : MonoBehaviour
         centerOffset += mCamera.transform.right * (CoinCenterOffset.x * magX);
         centerOffset += mCamera.transform.up * (CoinCenterOffset.y * magY);
 
-        Vector3 force = mPreviewCoin.transform.position - mCamera.transform.position; //mCamera.transform.forward * (Mathf.Lerp(CoinForceMin, CoinForceMax, mCurrentStrength));
+        Vector3 force = (mPreviewCoin.transform.position - mCamera.transform.position).normalized; //mCamera.transform.forward * (Mathf.Lerp(CoinForceMin, CoinForceMax, mCurrentStrength));
 
         force *= (Mathf.Lerp(CoinForceMin, CoinForceMax, mCurrentStrength));
 
