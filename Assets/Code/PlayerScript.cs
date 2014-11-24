@@ -19,6 +19,7 @@ public class PlayerScript : MonoBehaviour
     public float StrengthBarHeight = 32f;
     public Color StrengthBarColor = Color.yellow;
     public bool FollowCoins = true;
+    public float RotationIncrementDegrees = 1f;
 
     private bool mNeedReload = false;
     private Ray mRay;
@@ -32,6 +33,7 @@ public class PlayerScript : MonoBehaviour
     private Camera mCamera;
     private GameObject mInventoryCoin;
     private float mCoinRadius = 10f;
+    private Vector3 mCustomRotation = Vector3.zero;
 
     private float mCurrentReloadTime = 0f;
     private Vector3 mCurrentReloadPosition = Vector3.zero;
@@ -115,6 +117,7 @@ public class PlayerScript : MonoBehaviour
             mPreviewCoin.transform.position = (mCamera.transform.position + (mCamera.transform.forward * PlayerCoinDistanceFromCamera));
             mPreviewCoin.transform.forward = mCamera.transform.forward;
             mPreviewCoin.transform.Rotate(PlayerCoinStartingRotation);
+            mPreviewCoin.transform.rotation *= Quaternion.Euler(mCustomRotation);
 
             if (Input.GetKeyUp(KeyCode.Escape))
             {
@@ -125,6 +128,27 @@ public class PlayerScript : MonoBehaviour
             {
                 //Pan();
             }
+
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+            {
+                mCustomRotation.y += -RotationIncrementDegrees;
+            }
+
+            if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+            {
+                mCustomRotation.y += RotationIncrementDegrees;
+            }
+
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+            {
+                mCustomRotation.x += RotationIncrementDegrees;
+            }
+
+            if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+            {
+                mCustomRotation.x += -RotationIncrementDegrees;
+            }
+
 
             Vector3 mousePos = Input.mousePosition;
 
