@@ -18,33 +18,37 @@ public class CoinScript : BaseObject
 
     private void Start()
     {
-        HighlightRenderer.enabled = false;
-
-
+        if (HighlightRenderer != null)
+        {
+            HighlightRenderer.enabled = false;
+        }
     }
 
     private void FixedUpdate()
     {
-        switch (mCoinState)
+        if (HighlightRenderer != null)
         {
-            case CoinStates.IDLE:
-            break;
-                
-            case CoinStates.HIGHLIGHTED:
-
-            break;
-                
-            case CoinStates.GRABBED:
-
-                //Vector3 forceVector = CoinUserInterfaceManager.MouseBoardPosition - mTransform.position;
-                //CoinRigidbody.AddRelativeForce(forceVector, ForceMode.Acceleration);
-
-            break;
-        }
+            switch (mCoinState)
+            {
+                case CoinStates.IDLE:
+                    break;
+                    
+                case CoinStates.HIGHLIGHTED:
+                    
+                    break;
+                    
+                case CoinStates.GRABBED:
+                    
+                    //Vector3 forceVector = CoinUserInterfaceManager.MouseBoardPosition - mTransform.position;
+                    //CoinRigidbody.AddRelativeForce(forceVector, ForceMode.Acceleration);
+                    
+                    break;
+            }
+        }       
 
         if (mRigidbody.velocity.sqrMagnitude > MaxVelocity * MaxVelocity)
         {
-            Vector3.ClampMagnitude(mRigidbody.velocity, MaxVelocity);
+            mRigidbody.velocity = Vector3.ClampMagnitude(mRigidbody.velocity, MaxVelocity);
         }
     }
 
@@ -107,11 +111,19 @@ public class CoinScript : BaseObject
         switch (newState)
         {
             case CoinStates.IDLE:
-                HighlightRenderer.enabled = false;
+
+                if (HighlightRenderer != null)
+                {
+                    HighlightRenderer.enabled = false;
+                }
             break;
 
             case CoinStates.HIGHLIGHTED:
-                HighlightRenderer.enabled = true;
+
+                if (HighlightRenderer != null)
+                {
+                    HighlightRenderer.enabled = true;
+                }
             break;
 
             case CoinStates.GRABBED:
