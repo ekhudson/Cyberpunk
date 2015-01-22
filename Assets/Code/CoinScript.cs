@@ -10,7 +10,7 @@ public class CoinScript : BaseObject
         GRABBED,
     }
 
-    public Renderer HighlightRenderer;
+    public MeshRenderer CoinMeshRenderer;
     public Rigidbody CoinRigidbody;
     public float MaxVelocity;
 
@@ -18,33 +18,35 @@ public class CoinScript : BaseObject
 
     private void Start()
     {
-        if (HighlightRenderer != null)
-        {
-            HighlightRenderer.enabled = false;
-        }
+//        if (HighlightRenderer != null)
+//        {
+//            HighlightRenderer.enabled = false;
+//        }
+
+        mRigidbody = CoinRigidbody;
     }
 
     private void FixedUpdate()
     {
-        if (HighlightRenderer != null)
-        {
-            switch (mCoinState)
-            {
-                case CoinStates.IDLE:
-                    break;
-                    
-                case CoinStates.HIGHLIGHTED:
-                    
-                    break;
-                    
-                case CoinStates.GRABBED:
-                    
-                    //Vector3 forceVector = CoinUserInterfaceManager.MouseBoardPosition - mTransform.position;
-                    //CoinRigidbody.AddRelativeForce(forceVector, ForceMode.Acceleration);
-                    
-                    break;
-            }
-        }       
+//        if (HighlightRenderer != null)
+//        {
+//            switch (mCoinState)
+//            {
+//                case CoinStates.IDLE:
+//                    break;
+//                    
+//                case CoinStates.HIGHLIGHTED:
+//                    
+//                    break;
+//                    
+//                case CoinStates.GRABBED:
+//                    
+//                    //Vector3 forceVector = CoinUserInterfaceManager.MouseBoardPosition - mTransform.position;
+//                    //CoinRigidbody.AddRelativeForce(forceVector, ForceMode.Acceleration);
+//                    
+//                    break;
+//            }
+//        }       
 
         if (mRigidbody.velocity.sqrMagnitude > MaxVelocity * MaxVelocity)
         {
@@ -73,63 +75,63 @@ public class CoinScript : BaseObject
 //        }
     }
 
-    private void OnMouseOver()
-    {
-        SetState(CoinStates.HIGHLIGHTED);
-    }
+//    private void OnMouseOver()
+//    {
+//        SetState(CoinStates.HIGHLIGHTED);
+//    }
+//
+//    private void OnMouseEnter()
+//    {
+//        SetState(CoinStates.HIGHLIGHTED);
+//    }
+//	
+//    private void OnMouseExit()
+//    {
+//        SetState(CoinStates.IDLE);
+//    }
+//
+//    private void OnMouseDrag()
+//    {
+//        SetState(CoinStates.GRABBED);
+//    }
+//
+//    private void OnMouseUp()
+//    {
+//        if (mCoinState == CoinStates.GRABBED)
+//        {
+//            SetState(CoinStates.IDLE);
+//        }
+//    }
 
-    private void OnMouseEnter()
-    {
-        SetState(CoinStates.HIGHLIGHTED);
-    }
-	
-    private void OnMouseExit()
-    {
-        SetState(CoinStates.IDLE);
-    }
-
-    private void OnMouseDrag()
-    {
-        SetState(CoinStates.GRABBED);
-    }
-
-    private void OnMouseUp()
-    {
-        if (mCoinState == CoinStates.GRABBED)
-        {
-            SetState(CoinStates.IDLE);
-        }
-    }
-
-    private void SetState(CoinStates newState)
-    {
-        if (newState == mCoinState)
-        {
-            return;
-        }
-
-        switch (newState)
-        {
-            case CoinStates.IDLE:
-
-                if (HighlightRenderer != null)
-                {
-                    HighlightRenderer.enabled = false;
-                }
-            break;
-
-            case CoinStates.HIGHLIGHTED:
-
-                if (HighlightRenderer != null)
-                {
-                    HighlightRenderer.enabled = true;
-                }
-            break;
-
-            case CoinStates.GRABBED:
-            break;
-        }
-
-        mCoinState = newState;
-    }
+//    private void SetState(CoinStates newState)
+//    {
+//        if (newState == mCoinState)
+//        {
+//            return;
+//        }
+//
+//        switch (newState)
+//        {
+//            case CoinStates.IDLE:
+//
+//                if (HighlightRenderer != null)
+//                {
+//                    HighlightRenderer.enabled = false;
+//                }
+//            break;
+//
+//            case CoinStates.HIGHLIGHTED:
+//
+//                if (HighlightRenderer != null)
+//                {
+//                    HighlightRenderer.enabled = true;
+//                }
+//            break;
+//
+//            case CoinStates.GRABBED:
+//            break;
+//        }
+//
+//        mCoinState = newState;
+//    }
 }

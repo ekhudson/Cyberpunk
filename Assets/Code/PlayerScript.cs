@@ -131,22 +131,42 @@ public class PlayerScript : MonoBehaviour
 
             if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
             {
-                mCustomRotation.y += -RotationIncrementDegrees;
+                //mCustomRotation.y += -RotationIncrementDegrees;
+
+                Vector3 right = transform.right;
+
+                transform.position += -right * 1f;
+                mOrbitScript.Target.transform.position += -right * 1f;
             }
 
             if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
             {
-                mCustomRotation.y += RotationIncrementDegrees;
+                //mCustomRotation.y += RotationIncrementDegrees;
+
+                Vector3 right = transform.right;
+                
+                transform.position += right * 1f;
+                mOrbitScript.Target.transform.position += right * 1f;
             }
 
             if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
             {
-                mCustomRotation.x += RotationIncrementDegrees;
+                //mCustomRotation.x += RotationIncrementDegrees;
+
+                Vector3 forward = Vector3.Cross(transform.right, Vector3.up);
+                
+                transform.position += forward * 1f;
+                mOrbitScript.Target.transform.position += forward * 1f;
             }
 
             if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
             {
-                mCustomRotation.x += -RotationIncrementDegrees;
+                //mCustomRotation.x += -RotationIncrementDegrees;
+
+                Vector3 forward = Vector3.Cross(transform.right, Vector3.up);
+                
+                transform.position += -forward * 1f;
+                mOrbitScript.Target.transform.position += -forward * 1f;
             }
 
 
@@ -225,6 +245,7 @@ public class PlayerScript : MonoBehaviour
         GUILayout.BeginArea(new Rect(0,0, Screen.width, Screen.height));
 
         FollowCoins = GUILayout.Toggle(FollowCoins, "Follow");
+        CoinUserInterfaceManager.Instance.DoSlowMo = GUILayout.Toggle(CoinUserInterfaceManager.Instance.DoSlowMo, "Do Slow Mo");
 
         GUILayout.Label("Time Scale: " + Time.timeScale.ToString());
         GUILayout.Label("Fixed Delta Time: " + Time.fixedDeltaTime.ToString());
@@ -348,7 +369,11 @@ public class PlayerScript : MonoBehaviour
         {
             mOrbitScript.SetState(MouseOrbitScript.CameraStates.FOLLOWING_COIN);
             mOrbitScript.SetTarget(playerCoin.transform);
-            Time.timeScale = 0.45f;
+
+            if (CoinUserInterfaceManager.Instance.DoSlowMo)
+            {
+                Time.timeScale = 0.45f;
+            }
             //Time.fixedDeltaTime = mDefaultFixedTimeStep * (Time.timeScale / 1f);
         }
     }
