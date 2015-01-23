@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerScript : MonoBehaviour 
 {
@@ -8,6 +9,7 @@ public class PlayerScript : MonoBehaviour
     public LayerMask CoinLayerMask;
     public float CoinForceMin = 5f;
     public float CoinForceMax = 25f;
+    public float ForcePerSecond = 5f;
     public Vector3 PlayerCoinStartingRotation = new Vector3(90f, 0f, 0f);
     public float PlayerCoinDistanceFromCamera = 10f;
     public float ShotDelay = 5f;
@@ -45,6 +47,8 @@ public class PlayerScript : MonoBehaviour
     private float mDefaultFixedTimeStep;
 
     private GameObject mLastFiredCoin;
+    private float mTimeMouseButtonHeld = 0f;
+    private float mMaxHoldTime = 10f;
 
     private void Start()
     {
@@ -90,7 +94,8 @@ public class PlayerScript : MonoBehaviour
     {
         DrawInventory();
 
-        mCurrentStrength = Mathf.Clamp((mCurrentStrength + Input.GetAxis("Mouse ScrollWheel")), 0f, 1f);
+       // mCurrentStrength = Mathf.Clamp((mCurrentStrength + Input.GetAxis("Mouse ScrollWheel")), 0f, 1f);
+        mCurrentStrength = Mathf.Clamp(mTimeMouseButtonHeld / mMaxHoldTime, 0f, 1f);
 
         if (mNeedReload)
         {
@@ -202,12 +207,30 @@ public class PlayerScript : MonoBehaviour
                 //return;
             }
 
-            if (Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(0))
+            if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
+            {
+                mMaxHoldTime = (CoinForceMax / ForcePerSecond);
+                mTimeMouseButtonHeld = 0f;
+                return;
+            }
+
+            if (Input.GetMouseButton(0) || Input.GetKeyDown(KeyCode.Space))
+            {
+                mTimeMouseButtonHeld += Time.deltaTime;
+            }
+
+            if (Input.GetMouseButtonUp(0) || Input.GetKeyDown(KeyCode.Space))
             {
                 SpawnCoin();
-                mNeedReload =  true;
-               // Reload();
+                mNeedReload = true;
             }
+
+//            if (Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(0))
+//            {
+//                SpawnCoin();
+//                mNeedReload =  true;
+//               // Reload();
+//            }
         }
     }
 
@@ -246,6 +269,7 @@ public class PlayerScript : MonoBehaviour
 
         FollowCoins = GUILayout.Toggle(FollowCoins, "Follow");
         CoinUserInterfaceManager.Instance.DoSlowMo = GUILayout.Toggle(CoinUserInterfaceManager.Instance.DoSlowMo, "Do Slow Mo");
+        CoinUserInterfaceManager.Instance.DoCurving = GUILayout.Toggle(CoinUserInterfaceManager.Instance.DoCurving, "Do Curving");
 
         GUILayout.Label("Time Scale: " + Time.timeScale.ToString());
         GUILayout.Label("Fixed Delta Time: " + Time.fixedDeltaTime.ToString());
@@ -298,6 +322,7 @@ public class PlayerScript : MonoBehaviour
 
     private void Reload()
     {
+        mCurrentStrength = 0f;
         mLastFiredCoin.GetComponent<PlayerCoinScript>().FreshCoin = false;
         mOrbitScript.SetState(MouseOrbitScript.CameraStates.IDLE);
         Time.timeScale = 1f;
@@ -364,6 +389,8 @@ public class PlayerScript : MonoBehaviour
         playerCoin.rigidbody.AddForceAtPosition(force, playerCoin.transform.position + centerOffset - (mCamera.transform.forward * 0.25f), ForceMode.VelocityChange);
 
         playerCoin.name = "Launched Coin";       
+
+        playerCoin.GetComponent<PlayerCoinScript>().PlayLaunchSound();
 
         if (FollowCoins)
         {

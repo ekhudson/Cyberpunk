@@ -13,6 +13,7 @@ public class CoinScript : BaseObject
     public MeshRenderer CoinMeshRenderer;
     public Rigidbody CoinRigidbody;
     public float MaxVelocity;
+    public float BendScale = 1f;
 
     private CoinStates mCoinState = CoinStates.IDLE;
 
@@ -46,7 +47,7 @@ public class CoinScript : BaseObject
 //                    
 //                    break;
 //            }
-//        }       
+//        }
 
         if (mRigidbody.velocity.sqrMagnitude > MaxVelocity * MaxVelocity)
         {

@@ -5,7 +5,8 @@ public class CoinUserInterfaceManager : Singleton<CoinUserInterfaceManager>
 {
 
     public float DefaultTimeScale = 1f;
-    public bool DoSlowMo = true;
+    public bool DoSlowMo = false;
+    public bool DoCurving = false;
     public float SlowMoTimeScale = 0.5f;
     public float MaxRaycastLength = 100f;
 

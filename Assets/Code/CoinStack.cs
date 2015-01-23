@@ -78,12 +78,14 @@ public class CoinStack : MonoBehaviour
 
         GameObject newCoin = (GameObject)GameObject.Instantiate(CoinPrefab, position, Quaternion.Euler(rot));
 
+        newCoin.transform.parent = transform;
+
         mCurrentSpawnCount++;
 
         if (mCurrentSpawnCount > mSpawnAmount)
         {
             this.enabled = false;
-            gameObject.SetActive(false);
+            //gameObject.SetActive(false);
         }
     }
 }
