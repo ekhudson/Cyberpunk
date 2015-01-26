@@ -36,6 +36,7 @@ public class PlayerScript : MonoBehaviour
     private GameObject mInventoryCoin;
     private float mCoinRadius = 10f;
     private Vector3 mCustomRotation = Vector3.zero;
+    private bool mGamePaused = false;
 
     private float mCurrentReloadTime = 0f;
     private Vector3 mCurrentReloadPosition = Vector3.zero;
@@ -94,12 +95,30 @@ public class PlayerScript : MonoBehaviour
     {
         DrawInventory();
 
-       // mCurrentStrength = Mathf.Clamp((mCurrentStrength + Input.GetAxis("Mouse ScrollWheel")), 0f, 1f);
-        mCurrentStrength = Mathf.Clamp(mTimeMouseButtonHeld / mMaxHoldTime, 0f, 1f);
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            mGamePaused = !mGamePaused;
+        }
+
+        if (mGamePaused)
+        {
+            Time.timeScale = 0f; 
+        }    
+        else if (Time.timeScale == 0)
+        {
+            Time.timeScale = 1f;
+
+            // mCurrentStrength = Mathf.Clamp((mCurrentStrength + Input.GetAxis("Mouse ScrollWheel")), 0f, 1f);
+        }
+
+        if (!mGamePaused)
+        {
+            mCurrentStrength = Mathf.Clamp(mTimeMouseButtonHeld / mMaxHoldTime, 0f, 1f);
+        }
 
         if (mNeedReload)
         {
-            if (Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(0))
+            if (Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(0) && !mGamePaused)
             {
                 mNeedReload = false;
                 Reload();
@@ -107,7 +126,7 @@ public class PlayerScript : MonoBehaviour
         } 
         else
         {    
-            if (mCurrentReloadTime < ShotDelay)
+            if (mCurrentReloadTime < ShotDelay && !mGamePaused)
             {
                 mCurrentReloadTime += Time.deltaTime;
 
@@ -124,7 +143,7 @@ public class PlayerScript : MonoBehaviour
             mPreviewCoin.transform.Rotate(PlayerCoinStartingRotation);
             mPreviewCoin.transform.rotation *= Quaternion.Euler(mCustomRotation);
 
-            if (Input.GetKeyUp(KeyCode.Escape))
+            if (Input.GetKeyUp(KeyCode.C))
             {
                 CoinCenterOffset = Vector3.zero;
             }
@@ -207,30 +226,26 @@ public class PlayerScript : MonoBehaviour
                 //return;
             }
 
-            if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
+            if (!mGamePaused)
             {
-                mMaxHoldTime = (CoinForceMax / ForcePerSecond);
-                mTimeMouseButtonHeld = 0f;
-                return;
-            }
+                if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
+                {
+                    mMaxHoldTime = (CoinForceMax / ForcePerSecond);
+                    mTimeMouseButtonHeld = 0f;
+                    return;
+                }
 
-            if (Input.GetMouseButton(0) || Input.GetKeyDown(KeyCode.Space))
-            {
-                mTimeMouseButtonHeld += Time.deltaTime;
-            }
+                if (Input.GetMouseButton(0) || Input.GetKeyDown(KeyCode.Space))
+                {
+                    mTimeMouseButtonHeld += Time.deltaTime;
+                }
 
-            if (Input.GetMouseButtonUp(0) || Input.GetKeyDown(KeyCode.Space))
-            {
-                SpawnCoin();
-                mNeedReload = true;
+                if (Input.GetMouseButtonUp(0) || Input.GetKeyDown(KeyCode.Space))
+                {
+                    SpawnCoin();
+                    mNeedReload = true;
+                }
             }
-
-//            if (Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(0))
-//            {
-//                SpawnCoin();
-//                mNeedReload =  true;
-//               // Reload();
-//            }
         }
     }
 
@@ -265,11 +280,17 @@ public class PlayerScript : MonoBehaviour
 
     private void DrawDebug()
     {
-        GUILayout.BeginArea(new Rect(0,0, Screen.width, Screen.height));
+        GUILayout.BeginArea(new Rect(0, 32f, Screen.width, Screen.height));
 
-        FollowCoins = GUILayout.Toggle(FollowCoins, "Follow");
-        CoinUserInterfaceManager.Instance.DoSlowMo = GUILayout.Toggle(CoinUserInterfaceManager.Instance.DoSlowMo, "Do Slow Mo");
-        CoinUserInterfaceManager.Instance.DoCurving = GUILayout.Toggle(CoinUserInterfaceManager.Instance.DoCurving, "Do Curving");
+        if (mGamePaused)
+        {
+            GUI.Box(new Rect(Screen.width * 0.5f, Screen.height * 0.5f, 128f, 128f), "PAUSED");
+
+
+            FollowCoins = GUILayout.Toggle(FollowCoins, "Follow");
+            CoinUserInterfaceManager.Instance.DoSlowMo = GUILayout.Toggle(CoinUserInterfaceManager.Instance.DoSlowMo, "Do Slow Mo");
+            CoinUserInterfaceManager.Instance.DoCurving = GUILayout.Toggle(CoinUserInterfaceManager.Instance.DoCurving, "Do Curving");
+        }
 
         GUILayout.Label("Time Scale: " + Time.timeScale.ToString());
         GUILayout.Label("Fixed Delta Time: " + Time.fixedDeltaTime.ToString());

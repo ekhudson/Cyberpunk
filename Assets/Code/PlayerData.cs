@@ -17,4 +17,9 @@ public class PlayerData
     {
         return mCurrentScore;
     }
+
+    public void AddToScore(int amount)
+    {
+        mCurrentScore += amount;
+    }
 }

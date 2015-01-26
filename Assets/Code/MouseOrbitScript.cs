@@ -20,6 +20,8 @@ public class MouseOrbitScript : BaseObject
     private Transform mCurrentTarget;
     private float mCurrentDistace = 10.0f;
     private Transform mSecondFollowPoint = null;
+    private bool mCustomFollowOrbit = false; 
+
 
 	public enum CameraStates
 	{
@@ -67,6 +69,7 @@ public class MouseOrbitScript : BaseObject
 
         if (mCameraState == CameraStates.IDLE)
         {
+            mCustomFollowOrbit = false;
 
             if ( (mCurrentTarget && Input.GetMouseButton(1)))            
             {
@@ -81,7 +84,18 @@ public class MouseOrbitScript : BaseObject
         }
         else if (mCameraState == CameraStates.FOLLOWING_COIN)
         {
+            if ( (mCurrentTarget && Input.GetMouseButton(1)))            
+            {
+                mCustomFollowOrbit = true;
 
+                x += Input.GetAxis("Mouse X") * xSpeed * Time.deltaTime;
+                y += Input.GetAxis("Mouse Y") * ySpeed * Time.deltaTime;
+                
+                y = ClampAngle(y, yMinLimit, yMaxLimit);
+                
+                rotation = Quaternion.Euler(y, x, 0f);
+                //position = rotation * new Vector3(0.0f, 0.0f, -distance) + target.position;
+            }
         }
 
         position = rotation * new Vector3(0.0f, 0.0f, -mCurrentDistace) + mCurrentTarget.position;
@@ -95,9 +109,16 @@ public class MouseOrbitScript : BaseObject
 
         if (mCameraState == CameraStates.FOLLOWING_COIN && mSecondFollowPoint != null)
         {
-            
-            mTransform.rotation = Quaternion.RotateTowards(mTransform.rotation, Quaternion.LookRotation( (mSecondFollowPoint.position - transform.position).normalized ), 2f);
+            if (mCustomFollowOrbit)
+            {
+                return;
+            }
+
+            mTransform.rotation = Quaternion.RotateTowards(mTransform.rotation, Quaternion.LookRotation((mSecondFollowPoint.position - transform.position).normalized), 2f);
             //mTransform.LookAt(mSecondFollowPoint.position);
+        } else
+        {
+            mTransform.rotation = rotation;
         }
     }
 

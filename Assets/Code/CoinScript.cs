@@ -10,129 +10,52 @@ public class CoinScript : BaseObject
         GRABBED,
     }
 
+    public bool IsPlayerCoin = false;
     public MeshRenderer CoinMeshRenderer;
     public Rigidbody CoinRigidbody;
     public float MaxVelocity;
-    public float BendScale = 1f;
+    public int Value = 1;
+    public ParticleSystem CoinDespawnEffect;
+
+    private const float kFacingUpThreshold = -0.8f;
 
     private CoinStates mCoinState = CoinStates.IDLE;
 
     private void Start()
     {
-//        if (HighlightRenderer != null)
-//        {
-//            HighlightRenderer.enabled = false;
-//        }
-
         mRigidbody = CoinRigidbody;
     }
 
     private void FixedUpdate()
     {
-//        if (HighlightRenderer != null)
-//        {
-//            switch (mCoinState)
-//            {
-//                case CoinStates.IDLE:
-//                    break;
-//                    
-//                case CoinStates.HIGHLIGHTED:
-//                    
-//                    break;
-//                    
-//                case CoinStates.GRABBED:
-//                    
-//                    //Vector3 forceVector = CoinUserInterfaceManager.MouseBoardPosition - mTransform.position;
-//                    //CoinRigidbody.AddRelativeForce(forceVector, ForceMode.Acceleration);
-//                    
-//                    break;
-//            }
-//        }
-
         if (mRigidbody.velocity.sqrMagnitude > MaxVelocity * MaxVelocity)
         {
             mRigidbody.velocity = Vector3.ClampMagnitude(mRigidbody.velocity, MaxVelocity);
         }
+
+        if (mRigidbody.IsSleeping() && !IsPlayerCoin)
+        {
+            if (Vector3.Dot(mTransform.up, Vector3.up) < kFacingUpThreshold)
+            {
+                RemoveCoin();
+            }
+        }
     }
 
-    private void OnDrawGizmos()
+    private void RemoveCoin()
     {
-//        Vector3 forceVector = CoinUserInterfaceManager.MouseBoardPosition - mTransform.position;
-//
-//        Gizmos.DrawLine(mTransform.position, mTransform.position + forceVector);
-//
-//        switch (mCoinState)
-//        {
-//            case CoinStates.IDLE:
-//                break;
-//                
-//            case CoinStates.HIGHLIGHTED:
-//                
-//            break;
-//                
-//            case CoinStates.GRABBED:         
-//
-//            break;
-//        }
+        EventManager.Instance.Post(new CoinEvent(this, this, CoinEvent.CoinEventTypes.LANDED_FACE_UP));
+
+        if (CoinDespawnEffect != null)
+        {
+            CoinDespawnEffect.transform.position = transform.position;
+            CoinDespawnEffect.transform.parent = null;
+            CoinDespawnEffect.Play();
+        }
+
+        mGameObject.SetActive(false);
+        this.enabled = false;
+
+
     }
-
-//    private void OnMouseOver()
-//    {
-//        SetState(CoinStates.HIGHLIGHTED);
-//    }
-//
-//    private void OnMouseEnter()
-//    {
-//        SetState(CoinStates.HIGHLIGHTED);
-//    }
-//	
-//    private void OnMouseExit()
-//    {
-//        SetState(CoinStates.IDLE);
-//    }
-//
-//    private void OnMouseDrag()
-//    {
-//        SetState(CoinStates.GRABBED);
-//    }
-//
-//    private void OnMouseUp()
-//    {
-//        if (mCoinState == CoinStates.GRABBED)
-//        {
-//            SetState(CoinStates.IDLE);
-//        }
-//    }
-
-//    private void SetState(CoinStates newState)
-//    {
-//        if (newState == mCoinState)
-//        {
-//            return;
-//        }
-//
-//        switch (newState)
-//        {
-//            case CoinStates.IDLE:
-//
-//                if (HighlightRenderer != null)
-//                {
-//                    HighlightRenderer.enabled = false;
-//                }
-//            break;
-//
-//            case CoinStates.HIGHLIGHTED:
-//
-//                if (HighlightRenderer != null)
-//                {
-//                    HighlightRenderer.enabled = true;
-//                }
-//            break;
-//
-//            case CoinStates.GRABBED:
-//            break;
-//        }
-//
-//        mCoinState = newState;
-//    }
 }
