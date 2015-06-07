@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerCoinScript : MonoBehaviour 
+public class PlayerCoinScript : BaseObject 
 {
     public bool FreshCoin = true;
 
@@ -25,9 +25,9 @@ public class PlayerCoinScript : MonoBehaviour
 
     public void FixedUpdate()
     {
-        if (CoinUserInterfaceManager.Instance.DoCurving && rigidbody.angularVelocity != Vector3.zero && rigidbody.velocity != Vector3.zero)
+        if (CoinUserInterfaceManager.Instance.DoCurving && BaseRigidbody.angularVelocity != Vector3.zero && BaseRigidbody.velocity != Vector3.zero)
         {
-            rigidbody.AddForce(kCurveScaleAmount*Vector3.Cross(rigidbody.velocity,rigidbody.angularVelocity), ForceMode.Force);
+            BaseRigidbody.AddForce(kCurveScaleAmount*Vector3.Cross(BaseRigidbody.velocity, BaseRigidbody.angularVelocity), ForceMode.Force);
         }
     }
 

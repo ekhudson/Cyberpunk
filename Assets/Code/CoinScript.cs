@@ -20,6 +20,7 @@ public class CoinScript : BaseObject
     private const float kFacingUpThreshold = -0.8f;
 
     private CoinStates mCoinState = CoinStates.IDLE;
+    private Rigidbody mRigidbody;
 
     private void Start()
     {
@@ -35,7 +36,7 @@ public class CoinScript : BaseObject
 
         if (mRigidbody.IsSleeping() && !IsPlayerCoin)
         {
-            if (Vector3.Dot(mTransform.up, Vector3.up) < kFacingUpThreshold)
+            if (Vector3.Dot(BaseTransform.up, Vector3.up) < kFacingUpThreshold)
             {
                 RemoveCoin();
             }
@@ -53,7 +54,7 @@ public class CoinScript : BaseObject
             CoinDespawnEffect.Play();
         }
 
-        mGameObject.SetActive(false);
+        BaseGameObject.SetActive(false);
         this.enabled = false;
 
 

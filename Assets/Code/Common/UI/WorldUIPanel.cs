@@ -3,15 +3,15 @@ using System.Collections;
 
 public class WorldUIPanel : Singleton<WorldUIPanel>
 {
-    public UIPanel Panel;    
+    //public UIPanel Panel;    
 
-    private void Start()
-    {
-        if (!Panel)
-        {
-            Panel = GetComponent<UIPanel>();
-        }
-    }
+    //private void Start()
+    //{
+    //    if (!Panel)
+    //    {
+    //        Panel = GetComponent<UIPanel>();
+    //    }
+    //}
 
 
 }

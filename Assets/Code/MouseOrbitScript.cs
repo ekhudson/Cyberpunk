@@ -57,15 +57,12 @@ public class MouseOrbitScript : BaseObject
         // Make the rigid body not change rotation
         if (GetComponent<Rigidbody>())
             GetComponent<Rigidbody>().freezeRotation = true;
-
-        base.Start();
-
     }
 
     private void  LateUpdate () 
     {
-        Quaternion rotation = mTransform.rotation;
-        Vector3 position = mTransform.position;       
+        Quaternion rotation = BaseTransform.rotation;
+        Vector3 position = BaseTransform.position;       
 
         if (mCameraState == CameraStates.IDLE)
         {
@@ -114,11 +111,11 @@ public class MouseOrbitScript : BaseObject
                 return;
             }
 
-            mTransform.rotation = Quaternion.RotateTowards(mTransform.rotation, Quaternion.LookRotation((mSecondFollowPoint.position - transform.position).normalized), 2f);
-            //mTransform.LookAt(mSecondFollowPoint.position);
+            BaseTransform.rotation = Quaternion.RotateTowards(BaseTransform.rotation, Quaternion.LookRotation((mSecondFollowPoint.position - transform.position).normalized), 2f);
+            //BaseTransform.LookAt(mSecondFollowPoint.position);
         } else
         {
-            mTransform.rotation = rotation;
+            BaseTransform.rotation = rotation;
         }
     }
 

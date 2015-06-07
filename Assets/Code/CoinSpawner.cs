@@ -48,7 +48,7 @@ public class CoinSpawner : MonoBehaviour
 
     private void SpawnCoin(Vector3 location)
     {
-        GameObject coin = (GameObject)GameObject.Instantiate(CoinPrefab, location, Quaternion.identity);
+        BaseObject coin = (BaseObject)GameObject.Instantiate(CoinPrefab, location, Quaternion.identity);
 
         Vector3 eulerRotation = Vector3.zero;
 
@@ -60,13 +60,13 @@ public class CoinSpawner : MonoBehaviour
 
         Vector3 angularVelocity = Vector3.zero;
 
-        coin.rigidbody.maxAngularVelocity = MaxAngularVelocity;
+        coin.BaseRigidbody.maxAngularVelocity = MaxAngularVelocity;
 
         angularVelocity.x = Random.Range(-MaxAngularVelocity, MaxAngularVelocity);
         angularVelocity.y = Random.Range(-MaxAngularVelocity, MaxAngularVelocity);
         angularVelocity.z = Random.Range(-MaxAngularVelocity, MaxAngularVelocity);
 
-        coin.rigidbody.angularVelocity = angularVelocity;
+        coin.BaseRigidbody.angularVelocity = angularVelocity;
 
         coin.transform.parent = transform;
     }

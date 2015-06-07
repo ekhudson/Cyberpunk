@@ -64,7 +64,7 @@ public class PlayerScript : MonoBehaviour
             mat.color = Color.Lerp(mat.color, Color.clear, 0.45f);
         }
      
-        mPreviewCoin.rigidbody.isKinematic = true;
+        mPreviewCoin.GetComponent<Rigidbody>().isKinematic = true;
         mPreviewCoin.transform.rotation = Quaternion.Euler(PlayerCoinStartingRotation);
         mPreviewCoin.name = "Preview Coin";
 
@@ -80,11 +80,11 @@ public class PlayerScript : MonoBehaviour
         mCurrentReloadPosition = mCamera.ViewportToWorldPoint(ShotReloadOffset);
 
         mInventoryCoin = (GameObject)GameObject.Instantiate(PlayerCoinPrefab);
-        mInventoryCoin.rigidbody.isKinematic = true;
+        mInventoryCoin.GetComponent<Rigidbody>().isKinematic = true;
         mInventoryCoin.GetComponentInChildren<Collider>().isTrigger = true;
         mInventoryCoin.transform.position = mCamera.ViewportToWorldPoint(ShotReloadOffset);
 
-        mCoinRadius = PlayerCoinPrefab.renderer.bounds.extents.x;
+        mCoinRadius = PlayerCoinPrefab.GetComponent<Renderer>().bounds.extents.x;
 
         mOrbitScript = GetComponent<MouseOrbitScript>();
 
@@ -298,7 +298,7 @@ public class PlayerScript : MonoBehaviour
 
         if (mLastFiredCoin != null)
         {
-            GUILayout.Label("Coin Velocity: " + mLastFiredCoin.rigidbody.velocity.ToString());
+            GUILayout.Label("Coin Velocity: " + mLastFiredCoin.GetComponent<Rigidbody>().velocity.ToString());
             GUILayout.Label("Previous Force Amount: " + mPreviousForceAmount.ToString());
         }
 
@@ -352,7 +352,7 @@ public class PlayerScript : MonoBehaviour
         mCurrentReloadPosition = mCamera.ViewportToWorldPoint(ShotReloadOffset);
         mPreviewCoin.transform.position = mCurrentReloadPosition;
         mPreviewRenderer.enabled = true;
-        mCoinRadius = PlayerCoinPrefab.renderer.bounds.extents.x;
+        mCoinRadius = PlayerCoinPrefab.GetComponent<Renderer>().bounds.extents.x;
        
     }
 
@@ -389,7 +389,7 @@ public class PlayerScript : MonoBehaviour
         mPreviewRenderer.enabled = false;
 
         GameObject playerCoin = (GameObject)GameObject.Instantiate(PlayerCoinPrefab, pos, rot);
-        playerCoin.rigidbody.maxAngularVelocity = MaxAngularVelocity;
+        playerCoin.GetComponent<Rigidbody>().maxAngularVelocity = MaxAngularVelocity;
 
         Vector3 centerOffset = Vector3.zero;
 
@@ -407,7 +407,7 @@ public class PlayerScript : MonoBehaviour
 
         mLastFiredCoin = playerCoin;
 
-        playerCoin.rigidbody.AddForceAtPosition(force, playerCoin.transform.position + centerOffset - (mCamera.transform.forward * 0.25f), ForceMode.VelocityChange);
+        playerCoin.GetComponent<Rigidbody>().AddForceAtPosition(force, playerCoin.transform.position + centerOffset - (mCamera.transform.forward * 0.25f), ForceMode.VelocityChange);
 
         playerCoin.name = "Launched Coin";       
 
