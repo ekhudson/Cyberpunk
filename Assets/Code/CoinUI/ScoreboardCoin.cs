@@ -36,6 +36,7 @@ public class ScoreboardCoin : MonoBehaviour
             sCoinCam.enabled = false;
             sCoinCam.cullingMask = 0;
             sCoinCam.cullingMask = 1 << LayerMask.NameToLayer("UI");
+            sCoinCam.targetTexture = new RenderTexture(128, 128, 16);
         }
     }
 

@@ -33,6 +33,6 @@ public class PlayerCoinScript : BaseObject
 
 	public void OnCollisionEnter(Collision collision)
     {
-        EventManager.Instance.Post(new PlayerCoinImpactEvent(this, this, collision));
+        EventManager.Instance.Post(this, new PlayerCoinImpactEvent(this, this, collision));
     }
 }
