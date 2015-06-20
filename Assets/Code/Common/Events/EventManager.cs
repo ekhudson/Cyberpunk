@@ -86,7 +86,7 @@ public class EventManager : Singleton<EventManager>
 	public void Post(Component sender, EventBase evt)
 	{		
 #if DEBUG
-		Debug.Log(string.Format("Posting message from {0} : {1} @ {2} - {3}", sender.ToString(), evt.ToString(), evt.Place, evt.Time));
+		Debug.Log(string.Format("Posting message from {0} : {1} @ {2} - {3}", sender, evt.ToString(), evt.Place, evt.Time));
 #endif		
 		for (Type evtType = evt.GetType(); evtType != typeof(System.Object); evtType = evtType.BaseType)
 		{
