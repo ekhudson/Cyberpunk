@@ -45,27 +45,6 @@ public class Scoreboard : MonoBehaviour
 
         GUILayout.BeginHorizontal();
 
-        Rect coinRect = GUILayoutUtility.GetRect(64f, 64f);
-
-        RenderTexture currentRT = RenderTexture.active;
-        RenderTexture.active = ScoreboardCoin.CoinCam.targetTexture;
-        
-        // Render the camera's view.
-        ScoreboardCoin.CoinCam.Render();
-        
-        // Make a new texture and read the active Render Texture into it.
-        Texture2D image = new Texture2D(ScoreboardCoin.CoinCam.targetTexture.width, ScoreboardCoin.CoinCam.targetTexture.height);
-        image.ReadPixels(new Rect(0, 0, ScoreboardCoin.CoinCam.targetTexture.width, ScoreboardCoin.CoinCam.targetTexture.height), 0, 0);
-        image.Apply();
-        
-        // Replace the original active Render Texture.
-        RenderTexture.active = currentRT;
-       
-
-        GUI.Button(coinRect,image);
-
-        sGUICoinPos = GUIUtility.GUIToScreenPoint(coinRect.center);
-
         GUILayout.Label(tempText, GUI.skin.button, GUILayout.Height(64f));
 
         GUILayout.EndHorizontal();
