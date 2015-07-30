@@ -20,8 +20,10 @@ public class PlayerScript : MonoBehaviour
     public float MaxAngularVelocity = 35f;
     public float StrengthBarHeight = 32f;
     public Color StrengthBarColor = Color.yellow;
+    public Color StrengthBarBackgroundColor = Color.gray;
     public bool FollowCoins = true;
     public float RotationIncrementDegrees = 1f;
+    public Texture2D WhiteTexture = new Texture2D(1, 1);
 
     private bool mNeedReload = false;
     private Ray mRay;
@@ -89,6 +91,10 @@ public class PlayerScript : MonoBehaviour
         mOrbitScript = GetComponent<MouseOrbitScript>();
 
         EventManager.Instance.AddHandler<PlayerCoinImpactEvent>(PlayerCoinImpactEventHandler);
+
+        WhiteTexture = new Texture2D(1, 1);
+        WhiteTexture.SetPixel(1, 1, Color.white);
+        WhiteTexture.Apply();
     }
 
 	private void LateUpdate()
@@ -310,8 +316,8 @@ public class PlayerScript : MonoBehaviour
         float maxWidth = (mCamera.pixelWidth - (StrengthBarHeight * 2));
         Rect barRect = new Rect(StrengthBarHeight, mCamera.pixelHeight - StrengthBarHeight, maxWidth, StrengthBarHeight);
 
-        GUI.color = Color.gray;
-        GUI.Box(barRect, string.Empty);
+        GUI.color = StrengthBarBackgroundColor;
+        GUI.DrawTexture(barRect, WhiteTexture, ScaleMode.StretchToFill);
 
         float currentWidth = Mathf.Lerp(0f, maxWidth, mCurrentStrength);
 
@@ -322,7 +328,7 @@ public class PlayerScript : MonoBehaviour
         barRect.width = currentWidth;
 
         GUI.color = StrengthBarColor;
-        GUI.Box(barRect, string.Empty);
+        GUI.DrawTexture(barRect, WhiteTexture, ScaleMode.StretchToFill);
 
         GUI.color = Color.white;
     }
