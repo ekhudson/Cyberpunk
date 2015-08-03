@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityStandardAssets.ImageEffects;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -23,7 +24,8 @@ public class PlayerScript : MonoBehaviour
     public Color StrengthBarBackgroundColor = Color.gray;
     public bool FollowCoins = true;
     public float RotationIncrementDegrees = 1f;
-    public Texture2D WhiteTexture = new Texture2D(1, 1);
+    public Texture2D WhiteTexture = null;
+    public DepthOfField DOFScript;
 
     private bool mNeedReload = false;
     private Ray mRay;
@@ -53,11 +55,17 @@ public class PlayerScript : MonoBehaviour
     private float mTimeMouseButtonHeld = 0f;
     private float mMaxHoldTime = 10f;
 
+    private GUIStyle mReticuleStyle;
+
+    private const float kReticuleWidth = 16f;
+
     private void Start()
     {
         mCamera = Camera.main;
         mPreviewCoin = (GameObject)GameObject.Instantiate(PlayerCoinPrefab);
         mPreviewRenderer = mPreviewCoin.GetComponent<MeshRenderer>();
+
+        
 
         mDefaultFixedTimeStep = Time.fixedDeltaTime;
 
@@ -91,14 +99,22 @@ public class PlayerScript : MonoBehaviour
         mOrbitScript = GetComponent<MouseOrbitScript>();
 
         EventManager.Instance.AddHandler<PlayerCoinImpactEvent>(PlayerCoinImpactEventHandler);
-
-        WhiteTexture = new Texture2D(1, 1);
-        WhiteTexture.SetPixel(1, 1, Color.white);
-        WhiteTexture.Apply();
     }
 
 	private void LateUpdate()
     {
+        if (WhiteTexture == null)
+        {
+            WhiteTexture = new Texture2D(1, 1);
+            WhiteTexture.SetPixel(1, 1, Color.white);
+            WhiteTexture.Apply(); 
+        }
+
+        if (DOFScript.focalTransform == null && mPreviewCoin != null)
+        {
+            DOFScript.focalTransform = mPreviewCoin.transform;
+        }
+
         DrawInventory();
 
         if (Input.GetKeyUp(KeyCode.Escape))
@@ -261,6 +277,8 @@ public class PlayerScript : MonoBehaviour
 
         DrawStrength();
 
+        GetInput();
+
         if (mNeedReload || (mCurrentReloadTime < ShotDelay) || !mMouseOnCoin)
         {
             return;
@@ -275,13 +293,27 @@ public class PlayerScript : MonoBehaviour
               
         pos.y = mCamera.pixelHeight - pos.y;
 
-        pos.y -= 4f;
-        pos.x -= 4f;
+        pos.y -= kReticuleWidth * 0.5f;
+        pos.x -= kReticuleWidth * 0.5f;
 
         GUI.color = Color.red;
-        GUI.Label(new Rect(pos.x, pos.y, 8f, 8f), "X", GUI.skin.box);
+        GUI.DrawTexture(new Rect(pos.x, pos.y, kReticuleWidth, kReticuleWidth), WhiteTexture, ScaleMode.StretchToFill);
         GUI.color = Color.white;
+    }
 
+    private void GetInput()
+    {
+        if (mOrbitScript.GetState == MouseOrbitScript.CameraStates.FOLLOWING_COIN)
+        {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                Time.timeScale = 0.25f;
+            }
+            else
+            {
+                Time.timeScale = 1f;
+            }
+        }
     }
 
     private void DrawDebug()
@@ -359,7 +391,7 @@ public class PlayerScript : MonoBehaviour
         mPreviewCoin.transform.position = mCurrentReloadPosition;
         mPreviewRenderer.enabled = true;
         mCoinRadius = PlayerCoinPrefab.GetComponent<Renderer>().bounds.extents.x;
-       
+        DOFScript.focalTransform = mPreviewCoin.transform;
     }
 
     private void OnDrawGizmos()
@@ -397,6 +429,8 @@ public class PlayerScript : MonoBehaviour
         GameObject playerCoin = (GameObject)GameObject.Instantiate(PlayerCoinPrefab, pos, rot);
         playerCoin.GetComponent<Rigidbody>().maxAngularVelocity = MaxAngularVelocity;
 
+        
+
         Vector3 centerOffset = Vector3.zero;
 
         float magX = Mathf.Lerp(0f, OffsetMag, Mathf.Abs(CoinCenterOffset.x) * 2);
@@ -415,9 +449,15 @@ public class PlayerScript : MonoBehaviour
 
         playerCoin.GetComponent<Rigidbody>().AddForceAtPosition(force, playerCoin.transform.position + centerOffset - (mCamera.transform.forward * 0.25f), ForceMode.VelocityChange);
 
-        playerCoin.name = "Launched Coin";       
+        playerCoin.name = "Launched Coin";
 
-        playerCoin.GetComponent<PlayerCoinScript>().PlayLaunchSound();
+        DOFScript.focalTransform = playerCoin.transform;
+
+        Debug.Log("target: " + DOFScript.focalTransform.name);
+
+        PlayerCoinScript playerCoinScript = playerCoin.GetComponent<PlayerCoinScript>();
+
+        playerCoinScript.LaunchCoin();        
 
         if (FollowCoins)
         {
@@ -430,6 +470,8 @@ public class PlayerScript : MonoBehaviour
             }
             //Time.fixedDeltaTime = mDefaultFixedTimeStep * (Time.timeScale / 1f);
         }
+
+
     }
 
     public void PlayerCoinImpactEventHandler(object sender, PlayerCoinImpactEvent impactEvent)
