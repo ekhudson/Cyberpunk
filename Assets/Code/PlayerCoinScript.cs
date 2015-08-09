@@ -58,7 +58,7 @@ public class PlayerCoinScript : BaseObject
 
         foreach (Material mat in mRenderer.materials)
         {
-            mat.SetColor("_Albedo", mNearAlphaColor);
+            mat.SetColor("_Albedo", color);
         }
     }
 

@@ -19,6 +19,7 @@ public class CoinStack : MonoBehaviour
     private float mCurrentSpawnDelay = 0f;
     private float mCoinHeight = 0f;
     private Vector3 mPosition = Vector3.zero;
+    private float mCurrentTotalHeight = 0f;
 
 	// Use this for initialization
 	private void Start () 
@@ -65,7 +66,17 @@ public class CoinStack : MonoBehaviour
 
     private void SpawnCoin()
     {
-        Vector3 position = mPosition + (Vector3.up * (mCoinHeight * mCurrentSpawnCount));
+        Vector3 position = mPosition;
+
+        RaycastHit hit;
+        Ray testRay = new Ray(mPosition + (Vector3.up * 100), Vector3.down);
+
+        int layerMask = 1 << LayerMask.NameToLayer("CoinLayer");
+
+        if (Physics.Raycast(testRay, out hit, 1000f, layerMask))
+        {
+            position = hit.point +  new Vector3(0f, mCoinHeight * 0.5f, 0f);
+        }
 
         Vector3 positionOffset = Vector3.zero;
 

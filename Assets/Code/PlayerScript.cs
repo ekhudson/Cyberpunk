@@ -223,12 +223,12 @@ public class PlayerScript : MonoBehaviour
             
             if (Physics.Raycast(mRay, out mHit, 100f, CoinLayerMask))
             {
-                if (mHit.collider.transform.parent == null)
+                if (mHit.collider.transform == null)
                 {
                     return;
                 }
 
-                if (mHit.collider.transform.parent.gameObject != mPreviewCoin.gameObject)
+                if (mHit.collider.transform.gameObject != mPreviewCoin.gameObject)
                 {
                     mMouseOnCoin = false;
                     return;
@@ -452,8 +452,6 @@ public class PlayerScript : MonoBehaviour
         playerCoin.name = "Launched Coin";
 
         DOFScript.focalTransform = playerCoin.transform;
-
-        Debug.Log("target: " + DOFScript.focalTransform.name);
 
         PlayerCoinScript playerCoinScript = playerCoin.GetComponent<PlayerCoinScript>();
 
