@@ -22,7 +22,9 @@ public class Scoreboard : MonoBehaviour
 
         if (GUILayout.Button("Save"))
         {
-            SaveLoadController.Instance.Save(PlayerManager.Instance.GetPlayer(0));
+            PlayerData playerData = PlayerManager.Instance.GetPlayer(0);
+
+            SaveLoadController.Instance.Save<PlayerData>(PlayerManager.Instance.GetPlayer(0));
         }
 
         if (GUILayout.Button("Load"))
