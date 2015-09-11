@@ -20,6 +20,16 @@ public class Scoreboard : MonoBehaviour
 
         DrawScores();
 
+        if (GUILayout.Button("Save"))
+        {
+            SaveLoadController.Instance.Save(PlayerManager.Instance.GetPlayer(0));
+        }
+
+        if (GUILayout.Button("Load"))
+        {
+            PlayerManager.Instance.LoadPlayerData(0, SaveLoadController.Instance.Load());
+        }
+
         GUILayout.FlexibleSpace();
 
         GUILayout.EndHorizontal();

@@ -93,6 +93,15 @@ public class MouseOrbitScript : BaseObject
                 rotation = Quaternion.Euler(y, x, 0f);
                 //position = rotation * new Vector3(0.0f, 0.0f, -distance) + target.position;
             }
+            else if (mCurrentTarget)
+            {
+                //y += Mathf.Lerp(y, 90f, ySpeed * Time.deltaTime);
+
+                y = Vector3.RotateTowards(BaseTransform.forward, Vector3.down, ySpeed * Time.deltaTime, 0.0f).y;
+
+                y = ClampAngle(y, yMinLimit, yMaxLimit);
+                rotation = Quaternion.Euler(y, x, 0f);
+            }
         }
 
         position = rotation * new Vector3(0.0f, 0.0f, -mCurrentDistace) + mCurrentTarget.position;
