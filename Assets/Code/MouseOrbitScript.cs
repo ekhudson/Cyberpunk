@@ -4,8 +4,11 @@ using System.Collections;
 public class MouseOrbitScript : BaseObject 
 {
     public Transform Target;
-    public float distance = 10.0f;
-    public float FollowDistance = 5.0f;
+    public float Distance = 10.0f;
+    public float FollowDistance = 5f;
+    public float MinFollowDistance = 1f;
+    public float MaxFollowDistance = 20f;
+    public float ZoomSpeed = 0.25f;
 
     public float xSpeed = 250.0f;
     public float ySpeed = 120.0f;
@@ -48,7 +51,7 @@ public class MouseOrbitScript : BaseObject
     private void  Start () 
     {
         mCurrentTarget = Target;
-        mCurrentDistace = distance;
+        mCurrentDistace = Distance;
 
         Vector3 angles = transform.eulerAngles;
         x = angles.y;
@@ -62,7 +65,17 @@ public class MouseOrbitScript : BaseObject
     private void  LateUpdate () 
     {
         Quaternion rotation = BaseTransform.rotation;
-        Vector3 position = BaseTransform.position;       
+        Vector3 position = BaseTransform.position;
+
+        if (Input.mouseScrollDelta.y > 0)
+        {
+            mCurrentDistace = Mathf.Clamp(mCurrentDistace - ZoomSpeed, MinFollowDistance, MaxFollowDistance);
+        }
+
+        if (Input.mouseScrollDelta.y < 0)
+        {
+            mCurrentDistace = Mathf.Clamp(mCurrentDistace + ZoomSpeed, MinFollowDistance, MaxFollowDistance);
+        }
 
         if (mCameraState == CameraStates.IDLE)
         {
@@ -97,10 +110,10 @@ public class MouseOrbitScript : BaseObject
             {
                 //y += Mathf.Lerp(y, 90f, ySpeed * Time.deltaTime);
 
-                y = Vector3.RotateTowards(BaseTransform.forward, Vector3.down, ySpeed * Time.deltaTime, 0.0f).y;
+                //y = Vector3.RotateTowards(BaseTransform.forward, Vector3.up, ySpeed * Time.deltaTime, 0.0f).y;
 
-                y = ClampAngle(y, yMinLimit, yMaxLimit);
-                rotation = Quaternion.Euler(y, x, 0f);
+                //y = ClampAngle(y, yMinLimit, yMaxLimit);
+               // rotation = Quaternion.Euler(y, x, 0f);
             }
         }
 
@@ -153,7 +166,7 @@ public class MouseOrbitScript : BaseObject
 
         if (newState == CameraStates.IDLE)
         {
-            mCurrentDistace = distance;
+            mCurrentDistace = Distance;
             mCurrentTarget = Target;
             mSecondFollowPoint = null;
         }
