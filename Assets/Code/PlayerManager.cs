@@ -6,7 +6,7 @@ public class PlayerManager : Singleton<PlayerManager>
 {
 	private List<PlayerData> mPlayerList = new List<PlayerData>()
     {
-        new PlayerData("ekhudson"),
+        new PlayerData("ekhudson", 0),
     };
 
     public int GetPlayerCount()
@@ -22,5 +22,10 @@ public class PlayerManager : Singleton<PlayerManager>
         }
 
         return mPlayerList[index];
+    }
+
+    public void LoadPlayerData(int index, PlayerData playerData)
+    {
+        mPlayerList[index] = playerData;
     }
 }

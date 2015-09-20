@@ -1,6 +1,7 @@
 using System.Collections;
+using UnityEngine;
 
-public class CoinDataClass
+public class CoinDataClass 
 {
     public enum CoinClassTypes
     {
@@ -29,6 +30,7 @@ public class CoinDataClass
         public CoinDataClass.CoinClassTypes CoinType = CoinClassTypes.Coin;
         public CoinDataClass.CoinMaterialTypes CoinMaterial = CoinMaterialTypes.Nickle;
         public float Value = 1f;
+        public GameObject Model;
     }
 }
 
